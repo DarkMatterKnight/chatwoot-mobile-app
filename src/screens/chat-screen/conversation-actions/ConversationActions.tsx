@@ -13,7 +13,7 @@ import {
   UpdateParticipant,
 } from './components';
 import { TAB_BAR_HEIGHT } from '@/constants';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { ConversationStatus } from '@/types';
 import { useChatWindowContext } from '@/context';
 import { useAppDispatch, useAppSelector } from '@/hooks';
@@ -35,6 +35,7 @@ const SCREEN_WIDTH = Dimensions.get('screen').width;
 export type ConversationActionType = 'mute' | 'status' | 'unmute';
 
 export const ConversationActions = () => {
+  const isRetro = useIsRetro();
   const dispatch = useAppDispatch();
   const animationConfigs = useBottomSheetSpringConfigs({
     mass: 1,
@@ -122,16 +123,17 @@ export const ConversationActions = () => {
   };
 
   return (
-    <Animated.View style={tailwind.style('', `w-[${SCREEN_WIDTH}px]`)}>
+    // Night: the page sits inside the conversation window, so it takes the window's width.
+    <Animated.View style={tailwind.style(isRetro ? 'flex-1' : `w-[${SCREEN_WIDTH}px]`)}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT}]`)}>
+        contentContainerStyle={tailwind.style(isRetro ? 'pt-3 pb-6' : `pb-[${TAB_BAR_HEIGHT}]`)}>
         <ConversationBasicActions
           status={status}
           updateConversationStatus={updateConversationStatus}
           isMuted={isMuted || false}
         />
-        <Animated.View style={tailwind.style('pt-10')}>
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
           <ConversationSettingsPanel
             assignee={assignee || null}
             team={currentTeam || null}
@@ -141,19 +143,19 @@ export const ConversationActions = () => {
             onChangePriority={onChangePriority}
           />
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-10')}>
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
           <ConversationLabelActions labels={currentLabels} />
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-10')}>
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
           <AddParticipantList
             conversationParticipants={conversationParticipants}
             onAddParticipant={onAddParticipant}
           />
         </Animated.View>
-        <Animated.View style={tailwind.style('pt-10')}>
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
           {conversation && <ConversationMetaInformation conversation={conversation} />}
         </Animated.View>
-        <Animated.View style={tailwind.style('px-4 pt-10')}>
+        <Animated.View style={tailwind.style(isRetro ? 'px-3 pt-4' : 'px-4 pt-10')}>
           <Button variant="secondary" handlePress={onShareConversation} text="Share conversation" />
         </Animated.View>
       </ScrollView>

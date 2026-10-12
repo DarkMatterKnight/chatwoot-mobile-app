@@ -73,6 +73,7 @@
     }
   },
   "CONVERSATION": {
+    "ASSIGNMENT": "Assignment",
     "HEADER": {
       "TITLE": "Conversations",
       "CLEAR_FILTER": "Clear"

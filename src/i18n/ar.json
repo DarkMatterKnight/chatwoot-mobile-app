@@ -51,6 +51,7 @@
     "API_SUCCESS": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني"
   },
   "CONVERSATION": {
+    "ASSIGNMENT": "التعيين",
     "HEADER": {
       "TITLE": "المحادثات",
       "CLEAR_FILTER": "مسح"

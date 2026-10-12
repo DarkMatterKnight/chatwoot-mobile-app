@@ -1,11 +1,12 @@
 import React, { useMemo } from 'react';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Sentry from '@sentry/react-native';
 
 import { CaretRight } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
+import { ListCard } from './ListCard';
 import { AttributeListType } from '@/types';
 import { Icon } from '@/components-next/common';
 import { showToast } from '@/utils/toastUtils';
@@ -66,6 +67,7 @@ const AttributeItem = (props: AttributeItemProps) => {
             'flex-1 flex-row items-center justify-between py-[11px]',
             listItem.icon ? 'ml-3' : '',
             !isLastItem ? 'border-b-[1px] border-b-blackA-A3' : '',
+            !isLastItem ? whenNight('border-b-gray-300') : '',
           )}>
           <Animated.View>
             <Animated.Text
@@ -102,48 +104,19 @@ export const AttributeList = (props: AttributeListProps) => {
   const { list, sectionTitle } = props;
 
   return (
-    <Animated.View>
-      {sectionTitle ? (
-        <Animated.View style={tailwind.style('pl-4 pb-3')}>
-          <Animated.Text
-            style={tailwind.style(
-              'text-sm font-inter-medium-24 leading-[16px] tracking-[0.32px] text-gray-700',
-            )}>
-            {sectionTitle}
-          </Animated.Text>
-        </Animated.View>
-      ) : null}
-      <Animated.View style={[tailwind.style('rounded-[13px] mx-4 bg-white'), styles.listShadow]}>
-        {list.map(
-          (listItem, index) =>
-            !listItem.disabled &&
-            listItem.subtitle !== undefined &&
-            listItem.subtitle !== null && (
-              <AttributeItem
-                key={index}
-                {...{ listItem, index }}
-                isLastItem={index === list.length - 1}
-              />
-            ),
-        )}
-      </Animated.View>
-    </Animated.View>
+    <ListCard sectionTitle={sectionTitle}>
+      {list.map(
+        (listItem, index) =>
+          !listItem.disabled &&
+          listItem.subtitle !== undefined &&
+          listItem.subtitle !== null && (
+            <AttributeItem
+              key={index}
+              {...{ listItem, index }}
+              isLastItem={index === list.length - 1}
+            />
+          ),
+      )}
+    </ListCard>
   );
 };
-
-const styles = StyleSheet.create({
-  listShadow:
-    Platform.select({
-      ios: {
-        shadowColor: '#00000040',
-        shadowOffset: { width: 0, height: 0.15 },
-        shadowRadius: 2,
-        shadowOpacity: 0.35,
-        elevation: 2,
-      },
-      android: {
-        elevation: 4,
-        backgroundColor: 'white',
-      },
-    }) || {}, // Add fallback empty object
-});

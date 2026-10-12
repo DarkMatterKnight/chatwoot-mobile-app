@@ -9,7 +9,7 @@ import {
 
 import { useRefsContext } from '@/context';
 import { LabelTag } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { Icon } from '@/components-next/common/icon';
 import { SearchBar } from '@/components-next/common/search';
 import { useAppSelector } from '@/hooks';
@@ -18,7 +18,7 @@ import { filterLabels } from '@/store/label/labelSelectors';
 import { LabelItem } from '../LabelItem';
 import { LabelStack } from './LabelStack';
 import { LabelBackdrop } from './LabelBackdrop';
-import { sheetChrome } from '@/components-next/retro';
+import { RetroWindow, sheetChrome } from '@/components-next/retro';
 
 interface LabelActionsProps {
   labels: string[];
@@ -27,6 +27,7 @@ interface LabelActionsProps {
 }
 
 export const LabelActions = (props: LabelActionsProps) => {
+  const isRetro = useIsRetro();
   const { labels, onLabelsUpdate, sheetRef } = props;
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -84,38 +85,52 @@ export const LabelActions = (props: LabelActionsProps) => {
       return updatedLabels;
     });
   };
-  return (
-    <Animated.View>
-      <Animated.View style={tailwind.style('pl-4')}>
+  const labelChips = (
+    <Animated.View
+      style={tailwind.style('flex flex-row flex-wrap', isRetro ? 'px-3 pb-3' : 'pl-4')}>
+      {selectedLabelItems.map((label, index) => (
+        <LabelItem key={index} index={index} item={label} />
+      ))}
+      <Pressable
+        onPress={handleAddLabelPress}
+        style={({ pressed }) => [
+          styles.labelShadow,
+          tailwind.style(
+            'flex flex-row items-center bg-white px-3 py-[7px] rounded-lg mr-2 mt-3',
+            pressed ? 'bg-blue-100' : '',
+          ),
+        ]}>
+        <Icon icon={<LabelTag />} size={16} />
         <Animated.Text
           style={tailwind.style(
-            'text-sm font-inter-medium-24 leading-[16px] tracking-[0.32px] text-gray-700',
+            'text-md font-inter-medium-24 leading-[17px] tracking-[0.24px] pl-1.5 text-blue-800',
           )}>
-          Labels
+          Add
         </Animated.Text>
-      </Animated.View>
-      <Animated.View style={tailwind.style('flex flex-row flex-wrap pl-4')}>
-        {selectedLabelItems.map((label, index) => (
-          <LabelItem key={index} index={index} item={label} />
-        ))}
-        <Pressable
-          onPress={handleAddLabelPress}
-          style={({ pressed }) => [
-            styles.labelShadow,
-            tailwind.style(
-              'flex flex-row items-center bg-white px-3 py-[7px] rounded-lg mr-2 mt-3',
-              pressed ? 'bg-blue-100' : '',
-            ),
-          ]}>
-          <Icon icon={<LabelTag />} size={16} />
-          <Animated.Text
-            style={tailwind.style(
-              'text-md font-inter-medium-24 leading-[17px] tracking-[0.24px] pl-1.5 text-blue-800',
-            )}>
-            Add
-          </Animated.Text>
-        </Pressable>
-      </Animated.View>
+      </Pressable>
+    </Animated.View>
+  );
+
+  return (
+    <Animated.View>
+      {isRetro ? (
+        // Night: the labels in a small window of their own.
+        <RetroWindow flush title="Labels" style={tailwind.style('mx-3')}>
+          {labelChips}
+        </RetroWindow>
+      ) : (
+        <>
+          <Animated.View style={tailwind.style('pl-4')}>
+            <Animated.Text
+              style={tailwind.style(
+                'text-sm font-inter-medium-24 leading-[16px] tracking-[0.32px] text-gray-700',
+              )}>
+              Labels
+            </Animated.Text>
+          </Animated.View>
+          {labelChips}
+        </>
+      )}
       <BottomSheetModal
         {...sheetChrome()}
         ref={addLabelSheetRef}
