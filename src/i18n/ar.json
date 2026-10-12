@@ -459,5 +459,14 @@
     "EXECUTION_SUCCESS": "تم تنفيذ الماكرو بنجاح",
     "EXECUTION_ERROR": "Macro execution failed",
     "NO_MACROS": "لم يتم العثور على الماكروس"
+  },
+  "MIDNIGHT": {
+    "TITLE": "Midnight",
+    "HAND_BACK": "رجّعها لـ Midnight",
+    "HAND_BACK_HINT": "تنتقل لقائمة Midnight (معلّقة)",
+    "TAKE_OVER": "استلم المحادثة",
+    "TAKE_OVER_HINT": "تتعيّن لك، وMidnight يوقف بعد أول رد منك.",
+    "HANDED_BACK": "انتقلت لقائمة Midnight",
+    "TAKEN_OVER": "المحادثة صارت عندك"
   }
 }
