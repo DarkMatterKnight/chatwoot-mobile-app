@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StatusBar, Text, Platform, Pressable } from 'react-native';
+import { Text, Platform, Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 // import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,6 +33,8 @@ import {
   BottomSheetWrapper,
   Button,
   LanguageList,
+  AppearanceList,
+  appearanceLabel,
   AvailabilityStatusList,
   NotificationPreferences,
   SwitchAccount,
@@ -42,7 +44,13 @@ import { UserAvatar } from './components/UserAvatar';
 
 import { LANGUAGES, TAB_BAR_HEIGHT } from '@/constants';
 import { useRefsContext } from '@/context';
-import { ChatwootIcon, NotificationIcon, SwitchIcon, TranslateIcon } from '@/svg-icons';
+import {
+  AppearanceIcon,
+  ChatwootIcon,
+  NotificationIcon,
+  SwitchIcon,
+  TranslateIcon,
+} from '@/svg-icons';
 import { GenericListType } from '@/types';
 
 import { useHaptic } from '@/utils';
@@ -59,9 +67,11 @@ import {
   selectLocale,
   selectIsChatwootCloud,
   selectPushToken,
+  selectTheme,
 } from '@/store/settings/settingsSelectors';
 import { settingsActions } from '@/store/settings/settingsActions';
-import { setLocale } from '@/store/settings/settingsSlice';
+import { setLocale, setTheme } from '@/store/settings/settingsSlice';
+import { Theme } from '@/types/common/Theme';
 
 import AnalyticsHelper from '@/utils/analyticsUtils';
 import { PROFILE_EVENTS } from '@/constants/analyticsEvents';
@@ -138,6 +148,7 @@ const SettingsScreen = () => {
   const {
     userAvailabilityStatusSheetRef,
     languagesModalSheetRef,
+    appearanceSheetRef,
     notificationPreferencesSheetRef,
     switchAccountSheetRef,
     debugActionsSheetRef,
@@ -169,6 +180,14 @@ const SettingsScreen = () => {
 
   const onChangeLanguage = (locale: string) => {
     dispatch(setLocale(locale));
+  };
+
+  const currentTheme: Theme = useAppSelector(selectTheme) ?? 'system';
+
+  // A new theme remounts the app (ThemeProvider), which also closes this sheet.
+  const onChangeTheme = (theme: Theme) => {
+    appearanceSheetRef.current?.dismiss();
+    dispatch(setTheme(theme));
   };
 
   const changeAccount = (accountId: number) => {
@@ -242,6 +261,14 @@ const SettingsScreen = () => {
       onPressListItem: () => languagesModalSheetRef.current?.present(),
     },
     {
+      hasChevron: true,
+      title: i18n.t('SETTINGS.APPEARANCE'),
+      icon: <AppearanceIcon />,
+      subtitle: appearanceLabel(currentTheme),
+      subtitleType: 'light',
+      onPressListItem: () => appearanceSheetRef.current?.present(),
+    },
+    {
       hasChevron: enableAccountSwitch,
       title: i18n.t('SETTINGS.SWITCH_ACCOUNT'),
       icon: <SwitchIcon />,
@@ -276,11 +303,6 @@ const SettingsScreen = () => {
 
   return (
     <SafeAreaView style={tailwind.style('flex-1 bg-white font-inter-normal-20')}>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
       <SettingsHeader />
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
@@ -361,6 +383,20 @@ const SettingsScreen = () => {
           <BottomSheetHeader headerText={i18n.t('SETTINGS.SET_LANGUAGE')} />
           <LanguageList onChangeLanguage={onChangeLanguage} currentLanguage={activeLocale} />
         </BottomSheetScrollView>
+      </BottomSheetModal>
+      <BottomSheetModal
+        ref={appearanceSheetRef}
+        backdropComponent={BottomSheetBackdrop}
+        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
+        enablePanDownToClose
+        animationConfigs={animationConfigs}
+        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
+        style={tailwind.style('rounded-[26px] overflow-hidden')}
+        snapPoints={[230]}>
+        <BottomSheetWrapper>
+          <BottomSheetHeader headerText={i18n.t('SETTINGS.APPEARANCE')} />
+          <AppearanceList currentTheme={currentTheme} onChangeTheme={onChangeTheme} />
+        </BottomSheetWrapper>
       </BottomSheetModal>
       <BottomSheetModal
         ref={notificationPreferencesSheetRef}

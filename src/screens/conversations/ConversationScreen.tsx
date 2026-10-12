@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, AppState, RefreshControl } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -311,11 +311,6 @@ const ConversationScreen = () => {
 
   return (
     <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
       <ConversationListStateProvider>
         <ConversationHeader />
         <ConversationList />

@@ -1,5 +1,6 @@
 export * from './Add';
 export * from './AddParticipant';
+export * from './Appearance';
 export * from './AttachFile';
 export * from './Attachment';
 export * from './Camera';

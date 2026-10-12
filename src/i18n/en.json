@@ -302,6 +302,10 @@
     "LOGOUT": "Logout",
     "SUBMIT": "Submit",
     "SET_LANGUAGE": "Set Language",
+    "APPEARANCE": "Appearance",
+    "APPEARANCE_SYSTEM": "Match system",
+    "APPEARANCE_LIGHT": "Day",
+    "APPEARANCE_DARK": "Night",
     "DEBUG_ACTIONS": "Debug Actions"
   },
   "NOTIFICATION": {

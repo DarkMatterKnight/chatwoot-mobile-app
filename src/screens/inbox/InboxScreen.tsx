@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -181,11 +181,6 @@ const InboxScreen = () => {
 
   return (
     <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
       <InboxListStateProvider>
         <InboxHeader markAllAsRead={markAllAsRead} />
         <InboxList />

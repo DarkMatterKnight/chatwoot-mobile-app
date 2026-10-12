@@ -274,6 +274,10 @@
     "LOGOUT": "تسجيل الخروج",
     "SUBMIT": "إرسال",
     "SET_LANGUAGE": "Set Language",
+    "APPEARANCE": "المظهر",
+    "APPEARANCE_SYSTEM": "حسب الجهاز",
+    "APPEARANCE_LIGHT": "نهار",
+    "APPEARANCE_DARK": "ليل",
     "DEBUG_ACTIONS": "Debug Actions"
   },
   "NOTIFICATION": {
