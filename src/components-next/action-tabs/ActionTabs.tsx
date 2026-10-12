@@ -12,7 +12,7 @@ import { BlurView, BlurViewProps } from '@react-native-community/blur';
 
 import { TAB_BAR_HEIGHT } from '@/constants';
 import { useRefsContext } from '@/context';
-import { tailwind } from '@/theme';
+import { RETRO, tailwind, useIsRetro } from '@/theme';
 import { useHaptic, useScaleAnimation } from '@/utils';
 import { Icon } from '../common';
 import { useAppDispatch, useAppSelector } from '@/hooks';
@@ -28,7 +28,7 @@ const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 const tabExitSpringConfig = { damping: 20, stiffness: 360, mass: 1 };
 const tabEnterSpringConfig = { damping: 30, stiffness: 360, mass: 1 };
 
-type ActionTabBarBackgroundProps = BlurViewProps & PropsWithChildren;
+type ActionTabBarBackgroundProps = BlurViewProps & PropsWithChildren & { retro?: boolean };
 
 const ActionLabelTag = () => (
   <Svg width="29" height="28" viewBox="0 0 29 28" fill="none">
@@ -69,7 +69,7 @@ const ActionStatusIcon = () => (
 );
 
 const ActionTabBarBackground = (props: ActionTabBarBackgroundProps) => {
-  const { children, blurAmount, blurType, style } = props;
+  const { children, blurAmount, blurType, style, retro } = props;
 
   const currentState = useAppSelector(selectCurrentState);
 
@@ -88,6 +88,10 @@ const ActionTabBarBackground = (props: ActionTabBarBackgroundProps) => {
       ],
     };
   });
+
+  if (retro) {
+    return <Animated.View style={[style, animatedTabBarStyle]}>{children}</Animated.View>;
+  }
 
   return Platform.OS === 'ios' ? (
     <AnimatedBlurView {...{ blurAmount, blurType }} style={[style, animatedTabBarStyle]}>
@@ -134,6 +138,7 @@ const ActionItem = (props: ActionItemProps) => {
 export const ActionTabs = () => {
   const { bottom } = useSafeAreaInsets();
   const dispatch = useAppDispatch();
+  const isRetro = useIsRetro();
 
   const { actionsModalSheetRef } = useRefsContext();
 
@@ -168,6 +173,17 @@ export const ActionTabs = () => {
     },
   ];
 
+  if (isRetro) {
+    // Night: a square tool strip inside the list window, centred over its bottom edge.
+    return (
+      <ActionTabBarBackground retro style={styles.retroStrip}>
+        {bulkSelectActions.map(actionItem => {
+          return <ActionItem key={actionItem.action} {...{ actionItem }} />;
+        })}
+      </ActionTabBarBackground>
+    );
+  }
+
   return (
     <ActionTabBarBackground
       blurAmount={25}
@@ -198,6 +214,22 @@ export const ActionTabs = () => {
 };
 
 const styles = StyleSheet.create({
+  retroStrip: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    marginHorizontal: 'auto',
+    width: 220,
+    height: ACTION_TAB_HEIGHT,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 24,
+    backgroundColor: RETRO.body,
+    borderWidth: 1,
+    borderColor: RETRO.ink,
+  },
   listShadow:
     Platform.select({
       ios: {
