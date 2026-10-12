@@ -23,7 +23,8 @@ export const RetroCaret = ({ style }: { style?: StyleProp<TextStyle> }) => {
     const timer = setInterval(() => setLit(value => !value), 530);
     return () => clearInterval(timer);
   }, [reduceMotion]);
-  return <Text style={[style, { opacity: lit ? 1 : 0 }]}>{'▌'}</Text>;
+  // Colour, not opacity, so it also blinks when nested in a line of text.
+  return <Text style={[style, lit ? null : styles.unlit]}>{'▌'}</Text>;
 };
 
 /** A turning bar for loading, in the terminal face: | / - \ */
@@ -88,6 +89,7 @@ export const RetroMeter = ({
 };
 
 const styles = StyleSheet.create({
+  unlit: { color: 'transparent' },
   spinner: { fontFamily: 'VT323', fontSize: 23, lineHeight: 26, color: RETRO.ink },
   meter: { height: 14, padding: 1, borderWidth: HAIRLINE, borderColor: RETRO.ink },
   fill: { height: '100%', overflow: 'hidden' },

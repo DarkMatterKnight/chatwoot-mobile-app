@@ -3,6 +3,30 @@
 
 ---
 
+# Midnight
+
+This fork ships the Chatwoot mobile app as **Midnight** (`org.4ys.midnight`), the inbox for
+4Ys's Midnight Ai. What differs from upstream:
+
+- **Server.** Defaults to `https://inbox.4ys.org`. *Change URL* on the login screen still
+  points the app at any other Chatwoot server.
+- **Attachments up to 100 MB.** The server has to accept them too: raise Chatwoot's
+  attachment limit and the reverse proxy's body limit (e.g. nginx `client_max_body_size`).
+  WhatsApp still caps images at 5 MB and video and audio at 16 MB.
+- **Day and Night.** *Settings › Appearance* (or the phone's setting). Day is the app as it
+  was, in the 4Ys palette: ink on paper. Night is midnight.os from 4ys.org/midnight: lit
+  windows on a dotted desk, the terminal face, square corners.
+- **Midnight controls.** The button beside the reply field hands a conversation back to the
+  Midnight agent (status pending) or takes it over (open, assigned to you). It replaces
+  Chatwoot's Captain copilot.
+
+To build your own: set `EXPO_PUBLIC_PROJECT_ID` and `EXPO_PUBLIC_EAS_OWNER` for EAS, the
+Firebase files for `org.4ys.midnight` (`EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE`,
+`EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE`) and, optionally, Sentry. For universal links the
+server must serve the app-site association for `org.4ys.midnight`.
+
+---
+
 # Chatwoot
 
 Mobile app for chatwoot platform. Built with React Native and Expo.

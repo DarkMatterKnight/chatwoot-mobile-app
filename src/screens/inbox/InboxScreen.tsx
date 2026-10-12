@@ -12,8 +12,8 @@ import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { TAB_BAR_HEIGHT } from '@/constants';
 import { InboxListStateProvider } from '@/context';
 import type { Notification } from '@/types/Notification';
-import { tailwind, useIsRetro, whenNight } from '@/theme';
-import { RetroScreen } from '@/components-next/retro';
+import { getThemeMode, tailwind, useIsRetro, whenNight } from '@/theme';
+import { RetroCaret, RetroScreen } from '@/components-next/retro';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { notificationActions } from '@/store/notification/notificationAction';
 import {
@@ -156,7 +156,8 @@ const InboxList = () => {
           'pt-6 text-md tracking-[0.32px] text-gray-800',
           whenNight('font-vt323 text-[22px] leading-[24px] tracking-normal'),
         )}>
-        {`${whenNight('> ')}${i18n.t('NOTIFICATION.EMPTY')}`}
+        {`${whenNight('> ')}${i18n.t('NOTIFICATION.EMPTY')}${whenNight(' ')}`}
+        {getThemeMode() === 'night' ? <RetroCaret /> : null}
       </Animated.Text>
     </Animated.ScrollView>
   ) : (

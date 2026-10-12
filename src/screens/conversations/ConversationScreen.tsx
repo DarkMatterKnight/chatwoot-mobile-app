@@ -63,7 +63,7 @@ import i18n from '@/i18n';
 import ActionBottomSheet from '@/navigation/tabs/ActionBottomSheet';
 import { getCurrentRouteName } from '@/utils/navigationUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RetroScreen, sheetChrome } from '@/components-next/retro';
+import { RetroCaret, RetroScreen, sheetChrome } from '@/components-next/retro';
 
 // The screen list thats need to be checked for refreshing the conversations list
 const REFRESH_SCREEN_LIST = [SCREENS.CONVERSATION, SCREENS.INBOX, SCREENS.SETTINGS];
@@ -254,7 +254,8 @@ const ConversationList = () => {
           'pt-6 text-gray-800',
           isRetro ? 'font-vt323 text-[22px] leading-[24px]' : 'text-md tracking-[0.32px]',
         )}>
-        {isRetro ? `> ${i18n.t('CONVERSATION.EMPTY')}` : i18n.t('CONVERSATION.EMPTY')}
+        {isRetro ? `> ${i18n.t('CONVERSATION.EMPTY')} ` : i18n.t('CONVERSATION.EMPTY')}
+        {isRetro ? <RetroCaret /> : null}
       </Animated.Text>
     </Animated.ScrollView>
   ) : (
