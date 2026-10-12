@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   return {
     name: 'Midnight',
     slug: process.env.EXPO_PUBLIC_APP_SLUG || 'midnight',
-    version: '4.6.0',
+    version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'automatic',
@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     scheme: 'midnight',
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'org.4ys.midnight',
+      bundleIdentifier: 'org.fourys.midnight',
       infoPlist: {
         NSCameraUsageDescription:
           'This app requires access to the camera to upload images and videos.',
@@ -31,7 +31,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       adaptiveIcon: { foregroundImage: './assets/adaptive-icon.png', backgroundColor: '#F8F7F2' },
-      package: 'org.4ys.midnight',
+      package: 'org.fourys.midnight',
       permissions: ['android.permission.CAMERA', 'android.permission.RECORD_AUDIO'],
       // Please use the relative path to the google-services.json file
       googleServicesFile: process.env.EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE,
@@ -105,6 +105,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       ],
       './with-ffmpeg-pod.js',
     ],
+    // Android draws notification icons in white only: the mark with its eyes cut out.
+    notification: { icon: './assets/notification-icon.png', color: '#111111' },
     androidNavigationBar: { backgroundColor: '#F8F7F2' },
   };
 };

@@ -5,7 +5,7 @@
 
 # Midnight
 
-This fork ships the Chatwoot mobile app as **Midnight** (`org.4ys.midnight`), the inbox for
+This fork ships the Chatwoot mobile app as **Midnight** (`org.fourys.midnight`), the inbox for
 4Ys's Midnight Ai. What differs from upstream:
 
 - **Server.** Defaults to `https://inbox.4ys.org`. *Change URL* on the login screen still
@@ -20,10 +20,21 @@ This fork ships the Chatwoot mobile app as **Midnight** (`org.4ys.midnight`), th
   Midnight agent (status pending) or takes it over (open, assigned to you). It replaces
   Chatwoot's Captain copilot.
 
-To build your own: set `EXPO_PUBLIC_PROJECT_ID` and `EXPO_PUBLIC_EAS_OWNER` for EAS, the
-Firebase files for `org.4ys.midnight` (`EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE`,
-`EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE`) and, optionally, Sentry. For universal links the
-server must serve the app-site association for `org.4ys.midnight`.
+To build your own with EAS:
+
+- **Not Expo Go.** The app uses native modules Expo Go doesn't have (Firebase, notifee,
+  ffmpeg), so it runs as a development build (`eas build --profile development`, or
+  `npx expo run:ios` / `run:android` locally) or an installable test build
+  (`eas build --profile preview`).
+- **Set** `EXPO_PUBLIC_PROJECT_ID` and `EXPO_PUBLIC_EAS_OWNER`.
+- **Firebase is required.** Add `google-services.json` and `GoogleService-Info.plist` for
+  `org.fourys.midnight` and point `EXPO_PUBLIC_ANDROID_GOOGLE_SERVICES_FILE` and
+  `EXPO_PUBLIC_IOS_GOOGLE_SERVICES_FILE` at them. Prebuild stops without them.
+- **Sentry.** Release builds upload source maps to Sentry. Set `SENTRY_AUTH_TOKEN`,
+  `EXPO_PUBLIC_SENTRY_ORG_NAME` and `EXPO_PUBLIC_SENTRY_PROJECT_NAME`, or set
+  `SENTRY_DISABLE_AUTO_UPLOAD=true` in the EAS environment; otherwise the build fails.
+- **Universal links.** The server must serve the app-site association for
+  `org.fourys.midnight`.
 
 ---
 
