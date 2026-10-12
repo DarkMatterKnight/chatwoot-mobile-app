@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "Installation URL",
-    "DESCRIPTION": "If you are using a self-hosted Chatwoot installation, input your server URL. Otherwise, use app.chatwoot.com.",
+    "DESCRIPTION": "Enter your server URL. For 4Ys clients, it is inbox.4ys.org.",
     "URL_ERROR": "Enter a valid URL",
     "URL_REQUIRED": "URL is required",
     "CONNECT": "Connect",
@@ -73,6 +73,7 @@
     }
   },
   "CONVERSATION": {
+    "ASSIGNMENT": "Assignment",
     "HEADER": {
       "TITLE": "Conversations",
       "CLEAR_FILTER": "Clear"
@@ -145,7 +146,7 @@
     "TYPING": "typing",
     "ALL_CONVERSATION_LOADED": "All conversations loaded",
     "ASSIGN": "Assign conversation",
-    "FILE_SIZE_LIMIT": "File exceeds the 5MB attachment limit",
+    "FILE_SIZE_LIMIT": "File exceeds the %{size}MB attachment limit",
     "SHARE": "Share",
     "DETAILS": "Details",
     "LABELS": "Conversation labels",
@@ -302,6 +303,10 @@
     "LOGOUT": "Logout",
     "SUBMIT": "Submit",
     "SET_LANGUAGE": "Set Language",
+    "APPEARANCE": "Appearance",
+    "APPEARANCE_SYSTEM": "Match system",
+    "APPEARANCE_LIGHT": "Day",
+    "APPEARANCE_DARK": "Night",
     "DEBUG_ACTIONS": "Debug Actions"
   },
   "NOTIFICATION": {
@@ -431,7 +436,7 @@
     "OfFLINE": "You must connect to Wi-fi or a cellular network to get online again",
     "CANNOT_FETCH": "There was an error fetching the information, please try again",
     "AUTH": "Username / Password Incorrect. Please try again",
-    "NO_ACCOUNTS_MESSAGE": "You don't have access to any chatwoot accounts"
+    "NO_ACCOUNTS_MESSAGE": "You don't have access to any accounts on this server"
   },
   "SUCCESS": {
     "AUTH": "Login Successful"
@@ -500,21 +505,13 @@
       "MESSAGES": "Messages"
     }
   },
-  "COPILOT": {
-    "IMPROVE_REPLY": "Improve reply",
-    "CHANGE_TONE": "Change tone",
-    "FIX_GRAMMAR": "Fix grammar",
-    "SUGGEST_REPLY": "Suggest reply",
-    "SUMMARIZE": "Summarize conversation",
-    "THINKING": "Copilot is thinking",
-    "FOLLOW_UP_PLACEHOLDER": "Send additional prompts and follow-up",
-    "SELECT_TONE": "Select tone",
-    "TONE_PROFESSIONAL": "Professional",
-    "TONE_FRIENDLY": "Friendly",
-    "TONE_STRAIGHTFORWARD": "Straightforward",
-    "TONE_CASUAL": "Casual",
-    "TONE_CONFIDENT": "Confident",
-    "GENERATION_FAILED": "Failed to generate content. Please try again.",
-    "FOLLOW_UP_FAILED": "Failed to send follow-up. Please try again."
+  "MIDNIGHT": {
+    "TITLE": "Midnight",
+    "HAND_BACK": "Hand back to Midnight",
+    "HAND_BACK_HINT": "Moves it to Midnight's queue (pending)",
+    "TAKE_OVER": "Take over",
+    "TAKE_OVER_HINT": "Assigns it to you. Midnight stops after your first reply.",
+    "HANDED_BACK": "Moved to Midnight's queue",
+    "TAKEN_OVER": "This conversation is yours"
   }
 }

@@ -16,7 +16,7 @@ import Animated, {
 import Svg, { Path, Rect } from 'react-native-svg';
 
 import { useChatWindowContext } from '@/context';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Icon } from '@/components-next/common';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 
@@ -246,16 +246,22 @@ export const MessageTextInput = ({
               'ml-[5px] mr-2 py-2 pl-3 pr-[36px] rounded-2xl text-gray-950',
               'min-h-9 max-h-[76px]',
               isPrivateMessage ? 'bg-amber-100' : 'bg-blackA-A4',
+              // Night: a framed field, like every input in a window.
+              whenNight(
+                isPrivateMessage
+                  ? 'border border-dashed border-amber-700'
+                  : 'bg-white border border-gray-950',
+              ),
             ),
             // TODO: Try settings includeFontPadding to false and have a single lineHeight value of 20
           ]}
           placeholderTextColor={tailwind.color('bg-gray-800')}
           maxLength={maxLength}
-          placeholder={
+          placeholder={`${whenNight('> ')}${
             isPrivateMessage
-              ? `${i18n.t('CONVERSATION.PRIVATE_MSG_INPUT')}`
-              : `${i18n.t('CONVERSATION.TYPE_MESSAGE')}`
-          }
+              ? i18n.t('CONVERSATION.PRIVATE_MSG_INPUT')
+              : i18n.t('CONVERSATION.TYPE_MESSAGE')
+          }`}
           onSubmitEditing={() => setMessageContent('')}
           value={messageContent}
           returnKeyType={'default'}

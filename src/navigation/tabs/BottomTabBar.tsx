@@ -1,5 +1,5 @@
-import React, { PropsWithChildren } from 'react';
-import { Platform, Pressable } from 'react-native';
+import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text } from 'react-native';
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -19,7 +19,8 @@ import {
   SettingsIconFilled,
   SettingsIconOutline,
 } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { RETRO, tailwind, useIsRetro } from '@/theme';
+import i18n from '@/i18n';
 import { useHaptic, useScaleAnimation, useTabBarHeight } from '@/utils';
 
 import { TabParamList } from './AppTabs';
@@ -46,6 +47,65 @@ const TabBarIcons = ({ focused, route }: TabBarIconsProps) => {
   }
 };
 
+const TAB_LABELS: Partial<Record<keyof TabParamList, string>> = {
+  Conversations: 'FOOTER.CONVERSATION',
+  Inbox: 'FOOTER.NOTIFICATION',
+  Settings: 'FOOTER.SETTINGS',
+};
+
+/** Night: a taskbar tab in the terminal face; the open one is inverted, like a field tag. */
+const RetroTabLabel = ({ focused, route }: TabBarIconsProps) => (
+  <Text numberOfLines={1} style={[retroStyles.tab, focused && retroStyles.tabOn]}>
+    {i18n.t(TAB_LABELS[route.name] ?? route.name)}
+  </Text>
+);
+
+/** The taskbar clock, as midnight.os keeps one running. Device time, minutes only. */
+const TaskbarClock = () => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 15000);
+    return () => clearInterval(timer);
+  }, []);
+  const time = `${now.getHours().toString().padStart(2, '0')}:${now
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}`;
+  return (
+    <Text style={retroStyles.clock} accessible={false}>
+      {time}
+    </Text>
+  );
+};
+
+const retroStyles = StyleSheet.create({
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 14,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    backgroundColor: RETRO.night,
+    borderTopWidth: 1,
+    borderTopColor: RETRO.deskRule,
+  },
+  tab: {
+    paddingHorizontal: 6,
+    color: RETRO.deskInk,
+    fontFamily: 'VT323',
+    fontSize: 22,
+    lineHeight: 26,
+  },
+  tabOn: { backgroundColor: RETRO.deskInk, color: RETRO.night },
+  clock: {
+    marginStart: 'auto',
+    color: RETRO.deskMuted,
+    fontFamily: 'VT323',
+    fontSize: 22,
+    lineHeight: 26,
+  },
+});
+
 type TabBarBackgroundProps = BlurViewProps & PropsWithChildren;
 
 const TabBarBackground = (props: TabBarBackgroundProps) => {
@@ -71,7 +131,9 @@ const TabBarBackground = (props: TabBarBackgroundProps) => {
     };
   });
 
-  return Platform.OS === 'ios' ? (
+  const isRetro = useIsRetro();
+
+  return Platform.OS === 'ios' && !isRetro ? (
     <AnimatedBlurView {...{ blurAmount, blurType }} style={[style, animatedTabBarStyle]}>
       {children}
     </AnimatedBlurView>
@@ -85,6 +147,7 @@ const TabItem = (props: any) => {
   const { handlers, animatedStyle } = useScaleAnimation();
 
   const { onPress, onLongPress, isFocused, options, route } = props;
+  const isRetro = useIsRetro();
 
   // Memoize hitSlop to prevent new object reference on every render
   const hitSlop = React.useMemo(() => ({ top: 2, left: 10, right: 10, bottom: 10 }), []);
@@ -96,7 +159,12 @@ const TabItem = (props: any) => {
   );
   return (
     <Animated.View
-      style={[tailwind.style('justify-center items-center flex-1 bg-transparent'), animatedStyle]}>
+      style={[
+        tailwind.style(
+          isRetro ? 'bg-transparent' : 'justify-center items-center flex-1 bg-transparent',
+        ),
+        animatedStyle,
+      ]}>
       <Pressable
         hitSlop={hitSlop}
         {...handlers}
@@ -106,7 +174,11 @@ const TabItem = (props: any) => {
         testID={options.tabBarTestID}
         onPress={onPress}
         onLongPress={onLongPress}>
-        <TabBarIcons focused={isFocused} route={route} />
+        {isRetro ? (
+          <RetroTabLabel focused={isFocused} route={route} />
+        ) : (
+          <TabBarIcons focused={isFocused} route={route} />
+        )}
       </Pressable>
     </Animated.View>
   );
@@ -148,6 +220,37 @@ export const BottomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
     [navigation],
   );
 
+  const isRetro = useIsRetro();
+
+  const tabs = state.routes.map((route, index) => {
+    const { options } = descriptors[route.key];
+    const isFocused = state.index === index;
+
+    return (
+      <TabItem
+        key={route.key}
+        options={options}
+        onPress={createPressHandler(route, isFocused)}
+        onLongPress={createLongPressHandler(route)}
+        route={route}
+        isFocused={isFocused}
+      />
+    );
+  });
+
+  if (isRetro) {
+    return (
+      <TabBarBackground
+        style={[
+          tailwind.style('absolute w-full bottom-0', `h-[${tabBarHeight}px]`),
+          retroStyles.bar,
+        ]}>
+        {tabs}
+        <TaskbarClock />
+      </TabBarBackground>
+    );
+  }
+
   return (
     <TabBarBackground
       blurAmount={25}
@@ -167,21 +270,7 @@ export const BottomTabBar = ({ state, descriptors, navigation }: BottomTabBarPro
         ],
       })}>
       <Animated.View style={tailwind.style('absolute inset-0 h-[1px] bg-blackA-A3')} />
-      {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-        const isFocused = state.index === index;
-
-        return (
-          <TabItem
-            key={route.key}
-            options={options}
-            onPress={createPressHandler(route, isFocused)}
-            onLongPress={createLongPressHandler(route)}
-            route={route}
-            isFocused={isFocused}
-          />
-        );
-      })}
+      {tabs}
     </TabBarBackground>
   );
 };

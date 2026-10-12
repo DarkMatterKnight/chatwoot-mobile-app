@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, Text } from 'react-native';
 
 import { LockIcon } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Icon } from '@/components-next/common';
 
@@ -53,6 +53,7 @@ export const PrivateTextCell = (props: PrivateTextCellProps) => {
       style={[
         tailwind.style(
           'relative max-w-[300px] pl-2 pr-2.5 py-2 rounded-t-2xl rounded-bl-2xl overflow-hidden bg-amber-100',
+          whenNight('border border-dashed border-amber-700'),
           `max-w-[${TEXT_MAX_WIDTH}px]`,
           // singleLineShortText ? "flex flex-row" : "",
         ),
@@ -82,6 +83,7 @@ export const PrivateTextCell = (props: PrivateTextCellProps) => {
         <Text
           style={tailwind.style(
             'text-xs font-inter-420-20 tracking-[0.32px] pl-1 text-blackA-A10',
+            whenNight('font-jbmono-400 text-[10px] tracking-normal'),
           )}>
           {unixTimestampToReadableTime(timeStamp)}
         </Text>

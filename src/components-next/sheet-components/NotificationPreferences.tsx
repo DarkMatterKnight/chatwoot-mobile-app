@@ -70,10 +70,10 @@ export const NotificationPreferences = () => {
             {i18n.t(`NOTIFICATION_PREFERENCE.${NOTIFICATION_PREFERENCE_TYPES[item]}`)}
           </Animated.Text>
           <Switch
-            trackColor={{ false: '#C9D7E3', true: '#1F93FF' }}
-            thumbColor="#FFFFFF"
+            trackColor={{ false: tailwind.color('gray-300'), true: tailwind.color('blue-800') }}
+            thumbColor={tailwind.color('white')}
             style={styles.switch}
-            ios_backgroundColor="#C9D7E3"
+            ios_backgroundColor={tailwind.color('gray-300')}
             onValueChange={() => onPushItemChange(item)}
             value={selectedPushFlags.includes(item)}
           />

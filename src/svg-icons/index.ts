@@ -1,4 +1,5 @@
 export * from './attachments';
+export * from './brand';
 export * from './channels';
 export * from './check';
 export * from './common';
@@ -10,4 +11,3 @@ export * from './tabs';
 export * from './priority-icons';
 export * from './sla-icons';
 export * from './conversation-icons';
-export * from './copilot-icons';

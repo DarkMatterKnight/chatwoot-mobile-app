@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, RefreshControl } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -12,7 +12,8 @@ import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { TAB_BAR_HEIGHT } from '@/constants';
 import { InboxListStateProvider } from '@/context';
 import type { Notification } from '@/types/Notification';
-import { tailwind } from '@/theme';
+import { getThemeMode, tailwind, useIsRetro, whenNight } from '@/theme';
+import { RetroCaret, RetroScreen } from '@/components-next/retro';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { notificationActions } from '@/store/notification/notificationAction';
 import {
@@ -62,7 +63,7 @@ const InboxList = () => {
       <Animated.View
         style={tailwind.style(
           'flex-1 items-center justify-center pt-8',
-          `pb-[${TAB_BAR_HEIGHT}px]`,
+          whenNight('pb-3') || `pb-[${TAB_BAR_HEIGHT}px]`,
         )}>
         {isAllNotificationsFetched ? null : <ActivityIndicator size="small" />}
       </Animated.View>
@@ -136,7 +137,10 @@ const InboxList = () => {
 
   return shouldShowEmptyLoader ? (
     <Animated.View
-      style={tailwind.style('flex-1 items-center justify-center', `pb-[${TAB_BAR_HEIGHT}px]`)}>
+      style={tailwind.style(
+        'flex-1 items-center justify-center',
+        whenNight('pb-3') || `pb-[${TAB_BAR_HEIGHT}px]`,
+      )}>
       <ActivityIndicator />
     </Animated.View>
   ) : notifications.length === 0 ? (
@@ -144,11 +148,16 @@ const InboxList = () => {
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
       contentContainerStyle={tailwind.style(
         'flex-1 items-center justify-center',
-        `pb-[${TAB_BAR_HEIGHT}px]`,
+        whenNight('pb-3') || `pb-[${TAB_BAR_HEIGHT}px]`,
       )}>
       <EmptyStateIcon />
-      <Animated.Text style={tailwind.style('pt-6 text-md tracking-[0.32px] text-gray-800')}>
-        {i18n.t('NOTIFICATION.EMPTY')}
+      <Animated.Text
+        style={tailwind.style(
+          'pt-6 text-md tracking-[0.32px] text-gray-800',
+          whenNight('font-vt323 text-[22px] leading-[24px] tracking-normal'),
+        )}>
+        {`${whenNight('> ')}${i18n.t('NOTIFICATION.EMPTY')}${whenNight(' ')}`}
+        {getThemeMode() === 'night' ? <RetroCaret /> : null}
       </Animated.Text>
     </Animated.ScrollView>
   ) : (
@@ -163,13 +172,14 @@ const InboxList = () => {
       onEndReachedThreshold={0.5}
       ListFooterComponent={ListFooterComponent}
       renderItem={handleRender}
-      contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
+      contentContainerStyle={tailwind.style(whenNight('pb-3') || `pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );
 };
 
 const InboxScreen = () => {
   const dispatch = useAppDispatch();
+  const isRetro = useIsRetro();
 
   // Memoize the markAllAsRead callback
   const markAllAsRead = useCallback(async () => {
@@ -179,17 +189,24 @@ const InboxScreen = () => {
     });
   }, [dispatch]);
 
+  const content = (
+    <InboxListStateProvider>
+      <InboxHeader markAllAsRead={markAllAsRead} />
+      <InboxList />
+    </InboxListStateProvider>
+  );
+
+  if (isRetro) {
+    return (
+      <RetroScreen aboveTaskbar title={i18n.t('NOTIFICATION.INBOX')}>
+        {content}
+      </RetroScreen>
+    );
+  }
+
   return (
     <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
-      <InboxListStateProvider>
-        <InboxHeader markAllAsRead={markAllAsRead} />
-        <InboxList />
-      </InboxListStateProvider>
+      {content}
     </SafeAreaView>
   );
 };

@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "Installatie-url",
-    "DESCRIPTION": "Als je een zelf gehoste Chatwoot-installatie gebruikt, voer dan de URL van jouw server in. Gebruik anders: app.chatwoot.com.",
+    "DESCRIPTION": "Als je een zelf gehoste Chatwoot-installatie gebruikt, voer dan de URL van jouw server in. Gebruik anders: inbox.4ys.org.",
     "URL_ERROR": "Voer een geldige URL in",
     "URL_REQUIRED": "URL is vereist",
     "CONNECT": "Koppel",
@@ -123,7 +123,7 @@
     "TYPING": "typen",
     "ALL_CONVERSATION_LOADED": "Alle gesprekken geladen",
     "ASSIGN": "Gesprek toewijzen",
-    "FILE_SIZE_LIMIT": "Het bestand overschrijdt de limiet van 5 MB",
+    "FILE_SIZE_LIMIT": "Het bestand overschrijdt de limiet van %{size} MB",
     "SHARE": "Deel gesprek",
     "DETAILS": "Details",
     "LABELS": "Conversation labels",

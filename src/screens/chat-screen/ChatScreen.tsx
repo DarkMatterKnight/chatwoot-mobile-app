@@ -11,7 +11,8 @@ import { ReplyBoxContainer } from './components';
 import { MessagesListContainer } from './components';
 import { ChatWindowProvider, useChatWindowContext, useRefsContext } from '@/context';
 import { TabBarExcludedScreenParamList } from '@/navigation/tabs/AppTabs';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
+import { RetroDesk, RetroWindow } from '@/components-next/retro';
 import {
   selectConversationById,
   selectConversationFetching,
@@ -73,6 +74,7 @@ const ChatScreenWrapper = (props: ChatScreenProps) => {
   const conversation = useAppSelector(state => selectConversationById(state, conversationId));
 
   const { meta: { sender: { name = '', thumbnail = '' } = {} } = {} } = conversation || {};
+  const isRetro = useIsRetro();
   const { inboxId } = conversation || {};
 
   useEffect(() => {
@@ -83,9 +85,20 @@ const ChatScreenWrapper = (props: ChatScreenProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inboxId]);
 
+  const header = <ChatHeaderContainer name={name || ''} imageSrc={{ uri: thumbnail || '' }} />;
+
+  if (isRetro) {
+    // Night: the conversation is one window; its header is the title bar.
+    return (
+      <RetroWindow fill flush title={header}>
+        <ConversationPagerView {...props} />
+      </RetroWindow>
+    );
+  }
+
   return (
     <React.Fragment>
-      <ChatHeaderContainer name={name || ''} imageSrc={{ uri: thumbnail || '' }} />
+      {header}
       <ConversationPagerView {...props} />
     </React.Fragment>
   );
@@ -98,6 +111,7 @@ const ChatScreen = (props: ChatScreenProps) => {
   const conversationFetching = useAppSelector(state => selectConversationFetching(state));
   const conversationError = useAppSelector(state => selectConversationError(state));
   const conversation = useAppSelector(state => selectConversationById(state, conversationId));
+  const isRetro = useIsRetro();
 
   const fetchConversation = () => {
     dispatch(conversationActions.fetchConversation(conversationId));
@@ -137,12 +151,26 @@ const ChatScreen = (props: ChatScreenProps) => {
 
   if (conversation) {
     const { messageId } = props.route.params;
-    return (
-      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+    const content = (
+      <>
         <ChatWindowProvider conversationId={conversationId} messageId={messageId}>
           <ChatScreenWrapper {...props} />
         </ChatWindowProvider>
         <ActionBottomSheet />
+      </>
+    );
+    if (isRetro) {
+      return (
+        <RetroDesk>
+          <SafeAreaView edges={['top']} style={tailwind.style('flex-1 px-1.5 pt-1')}>
+            {content}
+          </SafeAreaView>
+        </RetroDesk>
+      );
+    }
+    return (
+      <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+        {content}
       </SafeAreaView>
     );
   }

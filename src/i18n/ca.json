@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "URL d'instal·lació",
-    "DESCRIPTION": "Si utilitzes una instal·lació de Chatwoot autoallotjada, introdueix l'URL del teu servidor. En cas contrari, utilitza app.chatwoot.com.",
+    "DESCRIPTION": "Si utilitzes una instal·lació de Chatwoot autoallotjada, introdueix l'URL del teu servidor. En cas contrari, utilitza inbox.4ys.org.",
     "URL_ERROR": "Introduïu un URL vàlid",
     "URL_REQUIRED": "La URL és necessària",
     "CONNECT": "Connectar",
@@ -123,7 +123,7 @@
     "TYPING": "escrivint",
     "ALL_CONVERSATION_LOADED": "S'han carregat totes les converses",
     "ASSIGN": "Assignar conversa",
-    "FILE_SIZE_LIMIT": "El fitxer supera el límit de 5 MB de fitxers adjunts",
+    "FILE_SIZE_LIMIT": "El fitxer supera el límit de %{size} MB de fitxers adjunts",
     "SHARE": "Share conversation",
     "DETAILS": "Detalls",
     "LABELS": "Etiquetes de converses",

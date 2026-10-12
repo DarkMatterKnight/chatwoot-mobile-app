@@ -10,7 +10,7 @@ import {
 } from 'expo-av';
 import { Image, ImageBackground } from 'expo-image';
 
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, UnixTimestamp } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Avatar } from '@/components-next/common';
@@ -192,6 +192,7 @@ export const VideoCell = (props: VideoCellProps) => {
                   <Text
                     style={tailwind.style(
                       'text-xs font-inter-420-20 tracking-[0.32px] leading-[14px] text-whiteA-A12 pr-1',
+                      whenNight('font-jbmono-400 text-[10px] tracking-normal'),
                     )}>
                     {unixTimestampToReadableTime(timeStamp)}
                   </Text>

@@ -17,7 +17,7 @@ import {
   GithubIcon,
   LinkedinIcon,
 } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { AttributeListType, CustomAttribute, GenericListType } from '@/types';
 
 import {
@@ -26,7 +26,7 @@ import {
   ContactMetaInformation,
   ContactLabelActions,
 } from './components';
-import { AttributeList } from '@/components-next';
+import { AttributeList, RetroDesk, RetroWindow } from '@/components-next';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TabBarExcludedScreenParamList } from '@/navigation/tabs/AppTabs';
 import { selectConversationById } from '@/store/conversation/conversationSelectors';
@@ -118,6 +118,7 @@ const processContactAttributes = (
 };
 
 const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
+  const isRetro = useIsRetro();
   const { conversationId, contactId: routeContactId } = props.route.params;
   const dispatch = useAppDispatch();
 
@@ -191,8 +192,7 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
       type: 'link',
     }));
 
-  const fullLocation =
-    location || [city, country].filter(Boolean).join(', ') || null;
+  const fullLocation = location || [city, country].filter(Boolean).join(', ') || null;
 
   const userDetails: GenericListType[] = [
     {
@@ -223,38 +223,68 @@ const ContactDetailsScreen = (props: ContactDetailsScreenProps) => {
 
   const allDetails = [...userDetails, ...socialMediaDetails];
 
+  const header = (
+    <ContactDetailsScreenHeader
+      name={name || contactName || ''}
+      thumbnail={thumbnail || contactThumbnail || ''}
+      bio={description || ''}
+    />
+  );
+  const basicActions =
+    email || phoneNumber ? (
+      <Animated.View style={tailwind.style(isRetro ? 'mt-4 px-3 pb-3' : 'mt-[23px] px-4')}>
+        <ContactBasicActions phoneNumber={phoneNumber || ''} email={email || ''} />
+      </Animated.View>
+    ) : null;
+  const sections = (
+    <>
+      <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
+        <AttributeList list={allDetails as AttributeListType[]} />
+      </Animated.View>
+      {hasContactCustomAttributes && (
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
+          <ContactMetaInformation attributes={usedContactCustomAttributes} />
+        </Animated.View>
+      )}
+      {contactId ? (
+        <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-10')}>
+          <ContactLabelActions labels={contactLabels} contactId={contactId} />
+        </Animated.View>
+      ) : null}
+    </>
+  );
+
+  if (isRetro) {
+    // Night: a stack of windows on the desk, the contact's card on top.
+    return (
+      <BottomSheetModalProvider>
+        <RetroDesk style={tailwind.style(Platform.OS === 'android' ? 'pt-12' : 'pt-6')}>
+          <Animated.ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={tailwind.style('pb-10')}>
+            <RetroWindow flush title={name || contactName || ''} style={tailwind.style('mx-3')}>
+              <Animated.View style={tailwind.style('pt-4')}>{header}</Animated.View>
+              {basicActions}
+            </RetroWindow>
+            {sections}
+          </Animated.ScrollView>
+        </RetroDesk>
+      </BottomSheetModalProvider>
+    );
+  }
+
   return (
     <BottomSheetModalProvider>
       <View
         style={tailwind.style(
           `flex-1 bg-white pt-6 ${Platform.OS === 'android' ? 'pt-12' : 'pt-6'}`,
         )}>
-        <ContactDetailsScreenHeader
-          name={name || contactName || ''}
-          thumbnail={thumbnail || contactThumbnail || ''}
-          bio={description || ''}
-        />
+        {header}
         <Animated.ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT}]`)}>
-          {email || phoneNumber ? (
-            <Animated.View style={tailwind.style('mt-[23px] px-4')}>
-              <ContactBasicActions phoneNumber={phoneNumber || ''} email={email || ''} />
-            </Animated.View>
-          ) : null}
-          <Animated.View style={tailwind.style('pt-10')}>
-            <AttributeList list={allDetails as AttributeListType[]} />
-          </Animated.View>
-          {hasContactCustomAttributes && (
-            <Animated.View style={tailwind.style('pt-10')}>
-              <ContactMetaInformation attributes={usedContactCustomAttributes} />
-            </Animated.View>
-          )}
-          {contactId ? (
-            <Animated.View style={tailwind.style('pt-10')}>
-              <ContactLabelActions labels={contactLabels} contactId={contactId} />
-            </Animated.View>
-          ) : null}
+          {basicActions}
+          {sections}
         </Animated.ScrollView>
       </View>
     </BottomSheetModalProvider>

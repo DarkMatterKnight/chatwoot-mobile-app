@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useConversationListStateContext } from '@/context';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { useHaptic } from '@/utils';
 import { getFilteredConversations } from '@/store/conversation/conversationSelectors';
 import { selectUserId } from '@/store/auth/authSelectors';
@@ -64,7 +64,8 @@ export const ConversationHeader = () => {
 
   const hapticSuccess = useHaptic('success');
 
-  const headerBorderColor = tailwind.color('text-blackA-A3') as string;
+  const isRetro = useIsRetro();
+  const headerBorderColor = tailwind.color(isRetro ? 'text-gray-950' : 'text-blackA-A3') as string;
 
   const headerOpenState = useDerivedValue(() =>
     currentState !== 'none' && currentState !== 'Select' ? withSpring(1) : withSpring(0),

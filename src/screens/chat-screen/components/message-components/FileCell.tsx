@@ -5,7 +5,7 @@ import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 import RNFetchBlob from 'rn-fetch-blob';
 
 import { FileIcon } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, UnixTimestamp } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Avatar, Icon } from '@/components-next/common';
@@ -171,6 +171,7 @@ export const FileCell = (props: FileCellProps) => {
                 'flex flex-row items-center relative max-w-[300px] pl-3 pr-2.5 py-2 rounded-2xl overflow-hidden',
                 isIncoming ? 'bg-blue-700' : '',
                 isOutgoing ? 'bg-gray-100' : '',
+                isOutgoing ? whenNight('border border-gray-950') : '',
                 shouldRenderAvatar
                   ? isOutgoing
                     ? 'rounded-br-none'
@@ -186,6 +187,7 @@ export const FileCell = (props: FileCellProps) => {
               <Animated.Text
                 style={tailwind.style(
                   'text-xs font-inter-420-20 tracking-[0.32px] leading-[14px] pr-1',
+                  whenNight('font-jbmono-400 text-[10px] tracking-normal'),
                   isIncoming ? 'text-whiteA-A11' : '',
                   isOutgoing ? 'text-gray-700' : '',
                 )}>

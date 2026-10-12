@@ -33,7 +33,7 @@ export const AUDIO_FORMATS = {
   M4A: 'audio/m4a',
 };
 
-export const MAXIMUM_FILE_UPLOAD_SIZE = 20;
+export const MAXIMUM_FILE_UPLOAD_SIZE = 100;
 
 export const CONVERSATION_STATUSES = [
   {
@@ -195,7 +195,7 @@ export const URL_REGEX = {
   CONVERSATION: 'app/accounts/[-0-9]+/conversations/[-0-9]',
 };
 
-export const SSO_CALLBACK_URL = 'chatwootapp://auth/saml';
+export const SSO_CALLBACK_URL = 'midnight://auth/saml';
 
 export const CONVERSATION_TOGGLE_STATUS = {
   open: 'RESOLVE',

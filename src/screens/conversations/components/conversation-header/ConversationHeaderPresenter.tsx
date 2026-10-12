@@ -3,7 +3,7 @@ import { Pressable, Text, ViewStyle } from 'react-native';
 import Animated, { AnimatedStyle } from 'react-native-reanimated';
 import { Icon } from '@/components-next/common';
 import { CheckedIcon, CloseIcon, FilterIcon, UncheckedIcon, SearchIcon } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import i18n from '@/i18n';
 import { useScaleAnimation } from '@/utils';
 import { useHeaderAnimation } from '@/hooks/useHeaderAnimation';
@@ -152,10 +152,16 @@ export const ConversationHeaderPresenter = ({
   onClearFilter,
 }: ConversationHeaderPresenterProps) => {
   const { handlers, animatedStyle } = useScaleAnimation();
+  const isRetro = useIsRetro();
 
   return (
     <Animated.View
-      style={[tailwind.style('flex flex-row justify-between items-center px-4 pt-2 pb-[12px]')]}>
+      style={[
+        tailwind.style(
+          'flex flex-row justify-between items-center',
+          isRetro ? 'px-3 py-2' : 'px-4 pt-2 pb-[12px]',
+        ),
+      ]}>
       <LeftSection
         currentState={currentState}
         isSelectedAll={isSelectedAll}
@@ -169,7 +175,7 @@ export const ConversationHeaderPresenter = ({
           animatedStyle={animatedStyle}
         />
       )}
-      <HeaderTitle />
+      {isRetro ? <Animated.View style={tailwind.style('flex-1')} /> : <HeaderTitle />}
       <RightSection
         currentState={currentState}
         filtersAppliedCount={filtersAppliedCount}

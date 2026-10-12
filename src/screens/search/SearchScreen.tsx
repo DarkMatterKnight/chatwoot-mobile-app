@@ -4,7 +4,8 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Tabs, type TabItem } from '@/components-next/common/tabs';
 
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
+import { RetroScreen } from '@/components-next/retro';
 import { useSearchScreen } from './hooks/useSearchScreen';
 import { SearchHeader } from './components/header/SearchHeader';
 import { SearchContent } from './components/views/SearchContent';
@@ -14,6 +15,7 @@ import { createRenderItem } from './utils/renderItem';
 import i18n from 'i18n';
 
 const SearchScreen = () => {
+  const isRetro = useIsRetro();
   const {
     searchText,
     recentSearches,
@@ -68,8 +70,8 @@ const SearchScreen = () => {
     [sectionData],
   );
 
-  return (
-    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+  const content = (
+    <>
       <SearchHeader
         searchText={searchText}
         isLoading={isLoading}
@@ -110,6 +112,20 @@ const SearchScreen = () => {
           renderItem={renderItem}
         />
       </Animated.View>
+    </>
+  );
+
+  if (isRetro) {
+    return (
+      <RetroScreen edges={['top', 'bottom']} title={i18n.t('SEARCH.PLACEHOLDER')}>
+        {content}
+      </RetroScreen>
+    );
+  }
+
+  return (
+    <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
+      {content}
     </SafeAreaView>
   );
 };

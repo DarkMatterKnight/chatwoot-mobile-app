@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "رابط التثبيت",
-    "DESCRIPTION": "إذا كنت تستضيف الموقع بشكل ذاتي الرجاء إدخال URL الخاص بخادمك.",
+    "DESCRIPTION": "اكتب رابط الخادم حقك. لعملاء 4Ys، الرابط هو inbox.4ys.org.",
     "URL_ERROR": "الرجاء إدخال عنوان صحيح",
     "URL_REQUIRED": "الرابط مطلوب",
     "CONNECT": "اتصل",
@@ -51,6 +51,7 @@
     "API_SUCCESS": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني"
   },
   "CONVERSATION": {
+    "ASSIGNMENT": "التعيين",
     "HEADER": {
       "TITLE": "المحادثات",
       "CLEAR_FILTER": "مسح"
@@ -123,7 +124,7 @@
     "TYPING": "جار الكتابة",
     "ALL_CONVERSATION_LOADED": "تم تحميل كافة المحادثات",
     "ASSIGN": "تعيين المحادثة",
-    "FILE_SIZE_LIMIT": "الملف يتجاوز الحجم المسموح - 5 ميغابايت",
+    "FILE_SIZE_LIMIT": "الملف أكبر من الحد المسموح (%{size} ميغابايت)",
     "SHARE": "مشاركة",
     "DETAILS": "التفاصيل",
     "LABELS": "وسوم المحادثة",
@@ -274,6 +275,10 @@
     "LOGOUT": "تسجيل الخروج",
     "SUBMIT": "إرسال",
     "SET_LANGUAGE": "Set Language",
+    "APPEARANCE": "المظهر",
+    "APPEARANCE_SYSTEM": "حسب الجهاز",
+    "APPEARANCE_LIGHT": "نهار",
+    "APPEARANCE_DARK": "ليل",
     "DEBUG_ACTIONS": "Debug Actions"
   },
   "NOTIFICATION": {
@@ -454,5 +459,14 @@
     "EXECUTION_SUCCESS": "تم تنفيذ الماكرو بنجاح",
     "EXECUTION_ERROR": "Macro execution failed",
     "NO_MACROS": "لم يتم العثور على الماكروس"
+  },
+  "MIDNIGHT": {
+    "TITLE": "Midnight",
+    "HAND_BACK": "رجّعها لـ Midnight",
+    "HAND_BACK_HINT": "تنتقل لقائمة Midnight (معلّقة)",
+    "TAKE_OVER": "استلم المحادثة",
+    "TAKE_OVER_HINT": "تتعيّن لك، وMidnight يوقف بعد أول رد منك.",
+    "HANDED_BACK": "انتقلت لقائمة Midnight",
+    "TAKEN_OVER": "المحادثة صارت عندك"
   }
 }

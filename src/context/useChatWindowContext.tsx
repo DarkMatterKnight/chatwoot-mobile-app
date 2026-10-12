@@ -15,8 +15,8 @@ interface ChatWindowContextType {
   isVoiceRecorderOpen: boolean;
   setIsVoiceRecorderOpen: React.Dispatch<React.SetStateAction<boolean>>;
 
-  isCopilotMenuOpen: boolean;
-  setIsCopilotMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isMidnightMenuOpen: boolean;
+  setIsMidnightMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
 
   pagerViewIndex: number;
   setPagerViewIndex: React.Dispatch<React.SetStateAction<number>>;
@@ -46,7 +46,7 @@ const ChatWindowProvider: React.FC<
   const [isAddMenuOptionSheetOpen, setAddMenuOptionSheetState] = useState(false);
   const [isTextInputFocused, setIsTextInputFocused] = useState(false);
   const [isVoiceRecorderOpen, setIsVoiceRecorderOpen] = useState(false);
-  const [isCopilotMenuOpen, setIsCopilotMenuOpen] = useState(false);
+  const [isMidnightMenuOpen, setIsMidnightMenuOpen] = useState(false);
   const [pagerViewIndex, setPagerViewIndex] = useState(0);
   const [scrollToMessageId, setScrollToMessageId] = useState<number | undefined>(undefined);
 
@@ -64,8 +64,8 @@ const ChatWindowProvider: React.FC<
         setIsTextInputFocused,
         isVoiceRecorderOpen,
         setIsVoiceRecorderOpen,
-        isCopilotMenuOpen,
-        setIsCopilotMenuOpen,
+        isMidnightMenuOpen,
+        setIsMidnightMenuOpen,
         pagerViewIndex,
         setPagerViewIndex,
         conversationId,

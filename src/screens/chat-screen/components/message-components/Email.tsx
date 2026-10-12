@@ -2,7 +2,7 @@ import React from 'react';
 import { Animated, Text, Dimensions } from 'react-native';
 import AutoHeightWebView from 'react-native-autoheight-webview';
 
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, MessageType } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 
@@ -55,6 +55,7 @@ export const Email = (props: EmailProps) => {
       style={[
         tailwind.style(
           'relative pl-3 pr-2.5 py-2 rounded-2xl overflow-hidden bg-gray-100',
+          whenNight('border border-gray-950'),
           `max-w-[${WIDTH}px]`,
           isMessageFailed ? 'bg-ruby-700' : '',
           isAvatarRendered
@@ -93,6 +94,7 @@ export const Email = (props: EmailProps) => {
         <Text
           style={tailwind.style(
             'text-xs font-inter-420-20 tracking-[0.32px] pr-1 text-gray-700',
+            whenNight('font-jbmono-400 text-[10px] tracking-normal'),
             isMessageFailed ? 'text-whiteA-A11' : '',
           )}>
           {unixTimestampToReadableTime(timeStamp)}

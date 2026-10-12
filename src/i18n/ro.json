@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "Instalare URL",
-    "DESCRIPTION": "Dacă folosiți o instalare de Chatwoot auto-găzduită, introduceți URL-ul serverului. Altfel, folosiți app.chatwoot.com.",
+    "DESCRIPTION": "Dacă folosiți o instalare de Chatwoot auto-găzduită, introduceți URL-ul serverului. Altfel, folosiți inbox.4ys.org.",
     "URL_ERROR": "Introduceți o adresă URL validă",
     "URL_REQUIRED": "URL-ul este necesar",
     "CONNECT": "Conectează-te",
@@ -123,7 +123,7 @@
     "TYPING": "tastează",
     "ALL_CONVERSATION_LOADED": "Toate conversațiile încărcate",
     "ASSIGN": "Atribuirea conversației",
-    "FILE_SIZE_LIMIT": "Fișierul depășește limita de atașare de 5MB",
+    "FILE_SIZE_LIMIT": "Fișierul depășește limita de atașare de %{size}MB",
     "SHARE": "Partajarea conversației",
     "DETAILS": "Detalii",
     "LABELS": "Etichete conversație",

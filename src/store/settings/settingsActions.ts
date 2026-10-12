@@ -50,7 +50,7 @@ export const settingsActions = {
 
         const installationUrl = extractDomain({ url });
         const INSTALLATION_URL = `${URL_TYPE}${installationUrl}/`;
-        const WEB_SOCKET_URL = `wss://${url}/cable`;
+        const WEB_SOCKET_URL = `wss://${installationUrl}/cable`;
         const isValid = await SettingsService.verifyInstallationUrl(INSTALLATION_URL);
 
         if (!isValid) {

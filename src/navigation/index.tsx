@@ -7,7 +7,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, NavigationState } from '@react-navigation/native';
 import { AppTabs } from './tabs/AppTabs';
 import i18n from 'i18n';
 import { navigationRef } from '@/utils/navigationUtils';
@@ -27,6 +27,16 @@ import Inter42020 from '@/assets/fonts/Inter-420-20.ttf';
 import Inter50024 from '@/assets/fonts/Inter-500-24.ttf';
 import Inter58024 from '@/assets/fonts/Inter-580-24.ttf';
 import Inter60020 from '@/assets/fonts/Inter-600-20.ttf';
+import InterTight400 from '@/assets/fonts/InterTight-400.ttf';
+import InterTight500 from '@/assets/fonts/InterTight-500.ttf';
+import InterTight700 from '@/assets/fonts/InterTight-700.ttf';
+import JetBrainsMono400 from '@/assets/fonts/JetBrainsMono-400.ttf';
+import JetBrainsMono700 from '@/assets/fonts/JetBrainsMono-700.ttf';
+import VT323 from '@/assets/fonts/VT323-Regular.ttf';
+
+// The navigator is remounted when Day/Night changes (ThemeProvider); this keeps the user
+// where they were instead of dropping them back on the first tab.
+let lastNavigationState: NavigationState | undefined;
 
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
@@ -39,6 +49,12 @@ export const AppNavigationContainer = () => {
     'Inter-500-24': Inter50024,
     'Inter-580-24': Inter58024,
     'Inter-600-20': Inter60020,
+    'InterTight-400': InterTight400,
+    'InterTight-500': InterTight500,
+    'InterTight-700': InterTight700,
+    'JetBrainsMono-400': JetBrainsMono400,
+    'JetBrainsMono-700': JetBrainsMono700,
+    VT323,
   });
 
   const routeNameRef = useRef<string | undefined>(undefined);
@@ -66,7 +82,7 @@ export const AppNavigationContainer = () => {
     getStateFromPath: (path: string, config: any) => {
       // Handle SSO callback - App running, receives deep link
       if (path.includes(SSO_CALLBACK_URL) || path.includes('auth/saml')) {
-        const ssoParams = SsoUtils.parseCallbackUrl(`chatwootapp://${path}`);
+        const ssoParams = SsoUtils.parseCallbackUrl(`midnight://${path}`);
         // Handle both success and error cases
         SsoUtils.handleSsoCallback(ssoParams, dispatch);
         // Return undefined to prevent navigation change for SSO callback
@@ -193,7 +209,9 @@ export const AppNavigationContainer = () => {
       onReady={() => {
         routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
       }}
-      onStateChange={async () => {
+      initialState={lastNavigationState}
+      onStateChange={async state => {
+        lastNavigationState = state;
         routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
       }}
       fallback={<ActivityIndicator animating />}>

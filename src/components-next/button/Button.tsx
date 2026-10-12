@@ -2,7 +2,8 @@ import React, { useCallback } from 'react';
 import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
+import { RetroButton } from '@/components-next/retro';
 import { useHaptic, useScaleAnimation } from '@/utils';
 
 type ButtonProps = {
@@ -52,6 +53,20 @@ export const Button = ({
   }, [disabled, handlePress, haptic]);
 
   const isPrimary = variant === 'primary';
+  const isRetro = useIsRetro();
+
+  if (isRetro) {
+    return (
+      <RetroButton
+        text={text}
+        variant={variant}
+        isDestructive={isDestructive}
+        disabled={disabled}
+        accessibilityState={{ disabled }}
+        onPress={() => !disabled && handlePress?.()}
+      />
+    );
+  }
 
   return (
     <Animated.View style={animatedStyle}>

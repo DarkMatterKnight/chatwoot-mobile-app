@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "URL dell'installazione",
-    "DESCRIPTION": "Se stai usando un'installazione di Chatwoot auto-ospitata, inserisci l'URL del tuo server. Altrimenti, usa app.chatwoot.com.",
+    "DESCRIPTION": "Se stai usando un'installazione di Chatwoot auto-ospitata, inserisci l'URL del tuo server. Altrimenti, usa inbox.4ys.org.",
     "URL_ERROR": "Inserisci un URL valido",
     "URL_REQUIRED": "URL obbligatorio",
     "CONNECT": "Connetti",
@@ -123,7 +123,7 @@
     "TYPING": "digitando",
     "ALL_CONVERSATION_LOADED": "Tutte le conversazioni sono caricate",
     "ASSIGN": "Assegna conversazione",
-    "FILE_SIZE_LIMIT": "Il file supera il limite di 5MB per l'allegato",
+    "FILE_SIZE_LIMIT": "Il file supera il limite di %{size}MB per l'allegato",
     "SHARE": "Condividi conversazione",
     "DETAILS": "Dettagli",
     "LABELS": "Etichette conversazioni",

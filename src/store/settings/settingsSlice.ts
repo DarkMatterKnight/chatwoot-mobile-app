@@ -1,8 +1,9 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { settingsActions } from './settingsActions';
 import * as RootNavigation from '@/utils/navigationUtils';
 import { NotificationSettings } from './settingsTypes';
 import { Theme } from '@/types/common/Theme';
+import { DEFAULT_INSTALLATION_HOST } from '@/constants/url';
 
 interface SettingsState {
   baseUrl: string;
@@ -20,8 +21,8 @@ interface SettingsState {
   pushToken: string;
 }
 const initialState: SettingsState = {
-  baseUrl: 'app.chatwoot.com',
-  installationUrl: 'https://app.chatwoot.com/',
+  baseUrl: DEFAULT_INSTALLATION_HOST,
+  installationUrl: `https://${DEFAULT_INSTALLATION_HOST}/`,
   uiFlags: {
     isSettingUrl: false,
     isUpdating: false,
@@ -37,7 +38,7 @@ const initialState: SettingsState = {
     selected_push_flags: [],
     user_id: 0,
   },
-  webSocketUrl: 'wss://app.chatwoot.com/cable',
+  webSocketUrl: `wss://${DEFAULT_INSTALLATION_HOST}/cable`,
   theme: 'system',
   version: '',
   pushToken: '',
@@ -53,6 +54,9 @@ export const settingsSlice = createSlice({
     setLocale: (state, action) => {
       state.localeValue = action.payload;
       state.uiFlags.isLocaleSet = true;
+    },
+    setTheme: (state, action: PayloadAction<Theme>) => {
+      state.theme = action.payload;
     },
   },
   extraReducers: builder => {
@@ -99,5 +103,5 @@ export const settingsSlice = createSlice({
       });
   },
 });
-export const { resetSettings, setLocale } = settingsSlice.actions;
+export const { resetSettings, setLocale, setTheme } = settingsSlice.actions;
 export default settingsSlice.reducer;

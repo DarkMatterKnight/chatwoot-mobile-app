@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, RefreshControl, StatusBar } from 'react-native';
+import { ActivityIndicator, AppState, RefreshControl } from 'react-native';
 import Animated, {
   LinearTransition,
   runOnJS,
@@ -38,7 +38,7 @@ import {
   useRefsContext,
 } from '@/context';
 
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { Conversation } from '@/types';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import {
@@ -63,6 +63,7 @@ import i18n from '@/i18n';
 import ActionBottomSheet from '@/navigation/tabs/ActionBottomSheet';
 import { getCurrentRouteName } from '@/utils/navigationUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RetroCaret, RetroScreen, sheetChrome } from '@/components-next/retro';
 
 // The screen list thats need to be checked for refreshing the conversations list
 const REFRESH_SCREEN_LIST = [SCREENS.CONVERSATION, SCREENS.INBOX, SCREENS.SETTINGS];
@@ -236,22 +237,25 @@ const ConversationList = () => {
   );
 
   const shouldShowEmptyLoader = isConversationsLoading && allConversations.length === 0;
+  const isRetro = useIsRetro();
+  const bottomPadding = isRetro ? 'pb-3' : `pb-[${TAB_BAR_HEIGHT}px]`;
 
   return shouldShowEmptyLoader ? (
-    <Animated.View
-      style={tailwind.style('flex-1 items-center justify-center', `pb-[${TAB_BAR_HEIGHT}px]`)}>
+    <Animated.View style={tailwind.style('flex-1 items-center justify-center', bottomPadding)}>
       <ActivityIndicator />
     </Animated.View>
   ) : allConversations.length === 0 ? (
     <Animated.ScrollView
       refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-      contentContainerStyle={tailwind.style(
-        'flex-1 items-center justify-center',
-        `pb-[${TAB_BAR_HEIGHT}px]`,
-      )}>
+      contentContainerStyle={tailwind.style('flex-1 items-center justify-center', bottomPadding)}>
       <EmptyStateIcon />
-      <Animated.Text style={tailwind.style('pt-6 text-md  tracking-[0.32px] text-gray-800')}>
-        {i18n.t('CONVERSATION.EMPTY')}
+      <Animated.Text
+        style={tailwind.style(
+          'pt-6 text-gray-800',
+          isRetro ? 'font-vt323 text-[22px] leading-[24px]' : 'text-md tracking-[0.32px]',
+        )}>
+        {isRetro ? `> ${i18n.t('CONVERSATION.EMPTY')} ` : i18n.t('CONVERSATION.EMPTY')}
+        {isRetro ? <RetroCaret /> : null}
       </Animated.Text>
     </Animated.ScrollView>
   ) : (
@@ -268,14 +272,28 @@ const ConversationList = () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       renderItem={handleRender}
-      contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}
+      contentContainerStyle={tailwind.style(isRetro ? 'pb-3' : `pb-[${TAB_BAR_HEIGHT - 1}px]`)}
     />
   );
+};
+
+/** Night's status line: how many conversations the window shows, and which ones. */
+const useWindowStatus = () => {
+  const filters = useAppSelector(selectFilters);
+  const userId = useAppSelector(selectUserId);
+  const count = useAppSelector(state => getFilteredConversations(state, filters, userId).length);
+  const status = i18n.t(`CONVERSATION.FILTERS.STATUS.OPTIONS.${filters.status.toUpperCase()}`);
+  const assignee = i18n.t(
+    `CONVERSATION.FILTERS.ASSIGNEE_TYPE.OPTIONS.${filters.assignee_type.toUpperCase()}`,
+  );
+  return `${count} \u00B7 ${status} \u00B7 ${assignee}`;
 };
 
 const ConversationScreen = () => {
   const currentBottomSheet = useAppSelector(selectBottomSheetState);
   const dispatch = useAppDispatch();
+  const isRetro = useIsRetro();
+  const windowStatus = useWindowStatus();
 
   const animationConfigs = useBottomSheetSpringConfigs({
     mass: 1.2,
@@ -309,38 +327,41 @@ const ConversationScreen = () => {
     }
   }, [currentBottomSheet]);
 
+  const content = (
+    <ConversationListStateProvider>
+      <ConversationHeader />
+      <ConversationList />
+      <BottomSheetModal
+        {...sheetChrome()}
+        ref={filtersModalSheetRef}
+        backdropComponent={BottomSheetBackdrop}
+        animationConfigs={animationConfigs}
+        enablePanDownToClose
+        snapPoints={filterSnapPoints}
+        onDismiss={handleOnDismiss}>
+        <BottomSheetWrapper>
+          {currentBottomSheet === 'status' ? <StatusFilters /> : null}
+          {currentBottomSheet === 'sort_by' ? <SortByFilters /> : null}
+          {currentBottomSheet === 'assignee_type' ? <AssigneeTypeFilters /> : null}
+          {currentBottomSheet === 'inbox_id' ? <InboxFilters /> : null}
+        </BottomSheetWrapper>
+      </BottomSheetModal>
+      <ActionBottomSheet />
+      <ActionTabs />
+    </ConversationListStateProvider>
+  );
+
+  if (isRetro) {
+    return (
+      <RetroScreen aboveTaskbar title={i18n.t('CONVERSATION.HEADER.TITLE')} status={windowStatus}>
+        {content}
+      </RetroScreen>
+    );
+  }
+
   return (
     <SafeAreaView edges={['top']} style={tailwind.style('flex-1 bg-white')}>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
-      <ConversationListStateProvider>
-        <ConversationHeader />
-        <ConversationList />
-        <BottomSheetModal
-          ref={filtersModalSheetRef}
-          backdropComponent={BottomSheetBackdrop}
-          handleIndicatorStyle={tailwind.style(
-            'overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]',
-          )}
-          handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-          style={tailwind.style('rounded-[26px] overflow-hidden')}
-          animationConfigs={animationConfigs}
-          enablePanDownToClose
-          snapPoints={filterSnapPoints}
-          onDismiss={handleOnDismiss}>
-          <BottomSheetWrapper>
-            {currentBottomSheet === 'status' ? <StatusFilters /> : null}
-            {currentBottomSheet === 'sort_by' ? <SortByFilters /> : null}
-            {currentBottomSheet === 'assignee_type' ? <AssigneeTypeFilters /> : null}
-            {currentBottomSheet === 'inbox_id' ? <InboxFilters /> : null}
-          </BottomSheetWrapper>
-        </BottomSheetModal>
-        <ActionBottomSheet />
-        <ActionTabs />
-      </ConversationListStateProvider>
+      {content}
     </SafeAreaView>
   );
 };

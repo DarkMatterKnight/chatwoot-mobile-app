@@ -9,11 +9,12 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import tailwind from 'twrnc';
 
 import { LoadingIcon } from '../../svg-icons';
 import { withAnchorPoint } from '../../utils';
 import { Icon } from '../common/icon';
+import { tailwind, useIsRetro } from '@/theme';
+import { RetroSpinner } from '../retro';
 
 interface SpinnerProps extends Pick<ViewProps, 'style'> {
   size: number;
@@ -21,6 +22,21 @@ interface SpinnerProps extends Pick<ViewProps, 'style'> {
 }
 
 export const Spinner = (props: SpinnerProps) => {
+  const isRetro = useIsRetro();
+  if (isRetro) {
+    const { size, style, stroke } = props;
+    return (
+      <Animated.View style={[tailwind.style('flex items-center justify-center'), style]}>
+        <RetroSpinner
+          style={{ fontSize: size * 1.15, lineHeight: size, ...(stroke ? { color: stroke } : {}) }}
+        />
+      </Animated.View>
+    );
+  }
+  return <RingSpinner {...props} />;
+};
+
+const RingSpinner = (props: SpinnerProps) => {
   const { size, style = {}, stroke } = props;
   const rotation = useSharedValue(0);
   React.useEffect(() => {

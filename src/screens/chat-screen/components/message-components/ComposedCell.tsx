@@ -4,7 +4,7 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 
 import { FileErrorIcon, LockIcon } from '@/svg-icons';
 import { differenceInHours } from 'date-fns';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Avatar, Icon } from '@/components-next';
@@ -115,7 +115,9 @@ export const ComposedCell = (props: ComposedCellProps) => {
                 isEmailMessage ? `max-w-[${EMAIL_MESSAGE_WIDTH}px]` : `max-w-[${TEXT_MAX_WIDTH}px]`,
                 isIncoming ? 'bg-blue-700' : '',
                 isOutgoing ? 'bg-gray-100' : '',
+                isOutgoing ? whenNight('border border-gray-950') : '',
                 isPrivate ? ' bg-amber-100' : '',
+                isPrivate ? whenNight('border border-dashed border-amber-700') : '',
                 shouldRenderAvatar
                   ? isOutgoing
                     ? 'rounded-br-none'
@@ -215,6 +217,7 @@ export const ComposedCell = (props: ComposedCellProps) => {
                   <Text
                     style={tailwind.style(
                       'text-xs font-inter-420-20 tracking-[0.32px] pr-1',
+                      whenNight('font-jbmono-400 text-[10px] tracking-normal'),
                       isIncoming ? 'text-whiteA-A11' : '',
                       isOutgoing ? 'text-gray-700' : '',
                       isPrivate ? 'pl-1' : '',

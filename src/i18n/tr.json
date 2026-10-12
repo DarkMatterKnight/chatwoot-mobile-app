@@ -14,7 +14,7 @@
   },
   "CONFIGURE_URL": {
     "ENTER_URL": "Kurulum URL'si",
-    "DESCRIPTION": "Kendi barındırdığınız bir Chatwoot kurulumu kullanıyorsanız, sunucu URL'nizi girin. Aksi takdirde app.chatwoot.com'u kullanın.",
+    "DESCRIPTION": "Kendi barındırdığınız bir Chatwoot kurulumu kullanıyorsanız, sunucu URL'nizi girin. Aksi takdirde inbox.4ys.org'u kullanın.",
     "URL_ERROR": "Geçerli bir URL girin",
     "URL_REQUIRED": "URL gereklidir",
     "CONNECT": "Bağlan",
@@ -123,7 +123,7 @@
     "TYPING": "yazıyor...",
     "ALL_CONVERSATION_LOADED": "Tüm görüşmeler yüklendi",
     "ASSIGN": "Sohbet ata",
-    "FILE_SIZE_LIMIT": "Dosya 5MB ek sınırını aşıyor",
+    "FILE_SIZE_LIMIT": "Dosya %{size}MB ek sınırını aşıyor",
     "SHARE": "Share conversation",
     "DETAILS": "Detaylar",
     "LABELS": "Sohbet etiketleri",

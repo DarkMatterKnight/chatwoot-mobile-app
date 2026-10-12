@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatusBar, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { SearchBar } from '@/components-next/common/search';
@@ -25,11 +25,6 @@ export function SearchHeader({
 }: SearchHeaderProps) {
   return (
     <>
-      <StatusBar
-        translucent
-        backgroundColor={tailwind.color('bg-white')}
-        barStyle={'dark-content'}
-      />
       <Animated.View style={tailwind.style('pt-2 pb-[12px] border-b border-b-blackA-A3')}>
         <Animated.View style={tailwind.style('flex flex-row items-center gap-2 pl-4 pr-2')}>
           <Pressable

@@ -11,6 +11,7 @@ import * as DropdownMenu from 'zeego/dropdown-menu';
 
 import { BottomSheetHeader, BottomSheetWrapper } from '@/components-next';
 import { tailwind } from '@/theme';
+import { sheetChrome } from '@/components-next/retro';
 
 export type DashboardList = {
   title: string;
@@ -112,13 +113,9 @@ export const ChatDropdownMenu = (props: PropsWithChildren<ChatDropdownMenuProps>
           {children}
         </Pressable>
         <BottomSheetModal
+          {...sheetChrome('mx-3 rounded-[26px] overflow-hidden')}
           ref={contextMenuSheetRef}
           backdropComponent={renderBackDrop}
-          handleIndicatorStyle={tailwind.style(
-            'overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]',
-          )}
-          handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-          style={tailwind.style('mx-3 rounded-[26px] overflow-hidden')}
           detached
           bottomInset={bottom === 0 ? 12 : bottom}
           animationConfigs={animationConfigs}

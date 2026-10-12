@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Alert, Keyboard, TextInput } from 'react-native';
 import { KeyboardStickyView } from 'react-native-keyboard-controller';
 import Animated, {
@@ -26,7 +26,7 @@ import {
 } from '@/utils';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { MESSAGE_MAX_LENGTH, REPLY_EDITOR_MODES } from '@/constants';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import {
   selectMessageContent,
   selectAttachments,
@@ -69,22 +69,8 @@ import { getLastEmailInSelectedChat } from '@/store/conversation/conversationSel
 import { selectAssignableParticipantsByInboxId } from '@/store/assignable-agent/assignableAgentSelectors';
 import { AudioRecorder } from '../audio-recorder/AudioRecorder';
 import { VoiceRecordButton } from './buttons/VoiceRecordButton';
-import { CopilotButton } from './buttons/CopilotButton';
-import { CopilotMenu } from '../copilot/CopilotMenu';
-import { CopilotEditorSection } from '../copilot/CopilotEditorSection';
-import { CopilotInputBar } from '../copilot/CopilotInputBar';
-import { ToneSelectionSheet } from '../copilot/ToneSelectionSheet';
-import {
-  selectIsCopilotActive,
-  selectIsGenerating,
-  selectGeneratedContent,
-  selectOriginalContent,
-  selectFollowUpContext,
-  setOriginalContent,
-  resetCopilot,
-} from '@/store/copilot/copilotSlice';
-import { executeCopilotAction, sendCopilotFollowUp } from '@/store/copilot/copilotActions';
-import type { CopilotActionKey } from '@/types/Copilot';
+import { MidnightButton } from './buttons/MidnightButton';
+import { MidnightMenu } from '../midnight/MidnightMenu';
 
 const SHEET_APPEAR_SPRING_CONFIG = {
   damping: 20,
@@ -121,30 +107,14 @@ const BottomSheetContent = () => {
     conversationId,
     isVoiceRecorderOpen,
     setIsVoiceRecorderOpen,
-    isCopilotMenuOpen,
-    setIsCopilotMenuOpen,
+    isMidnightMenuOpen,
+    setIsMidnightMenuOpen,
   } = useChatWindowContext();
 
-  // Copilot
-  const copilotAbortRef = useRef<{ abort: () => void; unwrap: () => Promise<unknown> }>();
-  const isCopilotActive = useAppSelector(selectIsCopilotActive);
-  const isGenerating = useAppSelector(selectIsGenerating);
-  const generatedContent = useAppSelector(selectGeneratedContent);
-  const originalContent = useAppSelector(selectOriginalContent);
-  const followUpContext = useAppSelector(selectFollowUpContext);
-  const { toneSelectionSheetRef } = useRefsContext();
-
-  // Reset copilot state and abort in-flight requests when conversation changes or unmount
+  // Close the Midnight menu when the conversation changes
   useEffect(() => {
-    copilotAbortRef.current?.abort();
-    dispatch(resetCopilot());
-    setIsCopilotMenuOpen(false);
-    toneSelectionSheetRef.current?.dismiss();
-    return () => {
-      copilotAbortRef.current?.abort();
-      dispatch(resetCopilot());
-    };
-  }, [conversationId, dispatch, setIsCopilotMenuOpen, toneSelectionSheetRef]);
+    setIsMidnightMenuOpen(false);
+  }, [conversationId, setIsMidnightMenuOpen]);
 
   const conversation = useAppSelector(state => selectConversationById(state, conversationId));
   const { inboxId, canReply } = conversation || {};
@@ -158,7 +128,6 @@ const BottomSheetContent = () => {
   const [bccEmails, setBCCEmails] = useState('');
   const [toEmails, setToEmails] = useState('');
   const [selectedCannedResponse, setSelectedCannedResponse] = useState<string | null>(null);
-  const [copilotFollowUpText, setCopilotFollowUpText] = useState('');
 
   const typingUsers = useAppSelector(selectTypingUsersByConversationId(conversationId));
   const typingText = useMemo(() => getTypingUsersText({ users: typingUsers }), [typingUsers]);
@@ -250,78 +219,56 @@ const BottomSheetContent = () => {
     } else {
       Keyboard.dismiss();
       hapticSelection?.();
-      setIsCopilotMenuOpen(false);
+      setIsMidnightMenuOpen(false);
       setAddMenuOptionSheetState(true);
     }
   };
 
-  const handleToggleCopilotMenu = () => {
+  const handleToggleMidnightMenu = () => {
     hapticSelection?.();
-    if (isCopilotMenuOpen) {
-      setIsCopilotMenuOpen(false);
+    if (isMidnightMenuOpen) {
+      setIsMidnightMenuOpen(false);
     } else {
       Keyboard.dismiss();
       setAddMenuOptionSheetState(false);
-      setIsCopilotMenuOpen(true);
+      setIsMidnightMenuOpen(true);
     }
   };
 
-  const handleCopilotAction = (actionKey: CopilotActionKey) => {
-    setIsCopilotMenuOpen(false);
-    copilotAbortRef.current?.abort();
-    dispatch(setOriginalContent(messageContent));
-    const promise = dispatch(
-      executeCopilotAction({ actionKey, content: messageContent, conversationId }),
+  /*
+   * The Midnight AI agent answers conversations that are pending, its queue in Chatwoot, and
+   * stands down for good once a person on the team replies or it hands off. These two set the
+   * conversation's status (and, taking over, its assignee) for the team to see; the agent
+   * itself decides from who last wrote, so taking over silences it from your first reply.
+   */
+  const handleHandBackToMidnight = async () => {
+    setIsMidnightMenuOpen(false);
+    const result = await dispatch(
+      conversationActions.toggleConversationStatus({
+        conversationId,
+        payload: { status: 'pending', snoozed_until: null },
+      }),
     );
-    copilotAbortRef.current = promise;
-    promise.unwrap().catch((err: { name?: string }) => {
-      if (err?.name === 'AbortError') return;
-      showToast({ message: i18n.t('COPILOT.GENERATION_FAILED') });
-    });
+    if (conversationActions.toggleConversationStatus.fulfilled.match(result)) {
+      showToast({ message: i18n.t('MIDNIGHT.HANDED_BACK') });
+    }
   };
 
-  const handleCopilotChangeTone = () => {
-    toneSelectionSheetRef.current?.present();
-  };
-
-  const handleToneSelected = (tone: CopilotActionKey) => {
-    setIsCopilotMenuOpen(false);
-    copilotAbortRef.current?.abort();
-    dispatch(setOriginalContent(messageContent));
-    const promise = dispatch(
-      executeCopilotAction({ actionKey: tone, content: messageContent, conversationId }),
+  const handleTakeOverFromMidnight = async () => {
+    setIsMidnightMenuOpen(false);
+    const result = await dispatch(
+      conversationActions.toggleConversationStatus({
+        conversationId,
+        payload: { status: 'open', snoozed_until: null },
+      }),
     );
-    copilotAbortRef.current = promise;
-    promise.unwrap().catch((err: { name?: string }) => {
-      if (err?.name === 'AbortError') return;
-      showToast({ message: i18n.t('COPILOT.GENERATION_FAILED') });
-    });
-  };
-
-  const handleCopilotAccept = () => {
-    dispatch(setMessageContent(generatedContent));
-    dispatch(resetCopilot());
-  };
-
-  const handleCopilotDiscard = () => {
-    copilotAbortRef.current?.abort();
-    dispatch(setMessageContent(originalContent));
-    dispatch(resetCopilot());
-  };
-
-  const handleCopilotFollowUp = (message: string) => {
-    if (followUpContext && message.trim().length > 0) {
-      copilotAbortRef.current?.abort();
-      const promise = dispatch(
-        sendCopilotFollowUp({ followUpContext, message, conversationId }),
+    if (!conversationActions.toggleConversationStatus.fulfilled.match(result)) return;
+    if (userId && conversation?.meta?.assignee?.id !== userId) {
+      await dispatch(
+        conversationActions.assignConversation({ conversationId, assigneeId: userId }),
       );
-      copilotAbortRef.current = promise;
-      promise.unwrap().catch((err: { name?: string }) => {
-        if (err?.name === 'AbortError') return;
-        showToast({ message: i18n.t('COPILOT.FOLLOW_UP_FAILED') });
-      });
-      setCopilotFollowUpText('');
     }
+    showToast({ message: i18n.t('MIDNIGHT.TAKEN_OVER') });
   };
 
   const setReplyToInPayload = (messagePayload: SendMessagePayload) => {
@@ -513,9 +460,10 @@ const BottomSheetContent = () => {
       )}
 
       <Animated.View
-        layout={isCopilotActive ? undefined : LinearTransition.springify().damping(38).stiffness(240)}
+        layout={LinearTransition.springify().damping(38).stiffness(240)}
         style={tailwind.style(
           `pb-2 border-t-[1px] border-t-blackA-A3 ${shouldShowReplyHeader ? 'pt-0' : 'pt-2'}`,
+          whenNight('border-t-gray-950'),
         )}>
         {quoteMessage && !isPrivate && (
           <Animated.View entering={FadeIn.duration(250)} exiting={FadeOut.duration(10)}>
@@ -536,84 +484,49 @@ const BottomSheetContent = () => {
 
         {typingText && <TypingIndicator typingText={typingText} />}
 
-        {isCopilotActive && (
-          <CopilotEditorSection
-            isGenerating={isGenerating}
-            generatedContent={generatedContent}
-            originalContent={originalContent}
-            onAccept={handleCopilotAccept}
-            onDiscard={handleCopilotDiscard}
-          />
-        )}
-
         {isVoiceRecorderOpen ? (
           <AudioRecorder onRecordingComplete={onRecordingComplete} audioFormat={audioFormat()} />
         ) : null}
         {!isVoiceRecorderOpen ? (
           <Animated.View
-            layout={isCopilotActive ? undefined : LinearTransition.springify().damping(20).stiffness(180)}
+            layout={LinearTransition.springify().damping(20).stiffness(180)}
             style={tailwind.style('flex flex-row px-1 items-end z-20 relative')}>
-            {!isCopilotActive && attachmentsLength === 0 && shouldShowFileUpload && (
+            {attachmentsLength === 0 && shouldShowFileUpload && (
               <AddCommandButton
                 onPress={handleShowAddMenuOption}
                 derivedAddMenuOptionStateValue={derivedAddMenuOptionStateValue}
               />
             )}
-            <CopilotButton
-              isActive={isCopilotMenuOpen || isCopilotActive}
-              isThinking={isGenerating}
-              onPress={isCopilotActive ? undefined : handleToggleCopilotMenu}
-              disabled={isCopilotActive}
+            <MidnightButton isActive={isMidnightMenuOpen} onPress={handleToggleMidnightMenu} />
+            <MessageTextInput
+              maxLength={maxLength()}
+              replyEditorMode={replyEditorMode}
+              selectedCannedResponse={selectedCannedResponse}
+              agents={agents as Agent[]}
+              messageContent={messageContent}
             />
-            {isCopilotActive ? (
-              <>
-                <CopilotInputBar
-                  isGenerating={isGenerating}
-                  onSendFollowUp={handleCopilotFollowUp}
-                  onFollowUpTextChange={setCopilotFollowUpText}
-                />
-                <SendMessageButton
-                  variant="copilot"
-                  onPress={() => handleCopilotFollowUp(copilotFollowUpText)}
-                  disabled={isGenerating || copilotFollowUpText.trim().length === 0}
-                />
-              </>
-            ) : (
-              <>
-                <MessageTextInput
-                  maxLength={maxLength()}
-                  replyEditorMode={replyEditorMode}
-                  selectedCannedResponse={selectedCannedResponse}
-                  agents={agents as Agent[]}
-                  messageContent={messageContent}
-                />
-                {(messageContent.length > 0 || attachmentsLength > 0) && (
-                  <SendMessageButton onPress={() => confirmOnSendReply(null)} />
-                )}
-                {messageContent.length === 0 && attachmentsLength === 0 && shouldShowFileUpload ? (
-                  <VoiceRecordButton onPress={onPressVoiceRecordIcon} />
-                ) : null}
-              </>
+            {(messageContent.length > 0 || attachmentsLength > 0) && (
+              <SendMessageButton onPress={() => confirmOnSendReply(null)} />
             )}
-            {isCopilotMenuOpen && (
-              <CopilotMenu
-                editorContent={messageContent}
-                editorMode={replyEditorMode}
-                onSelectAction={handleCopilotAction}
-                onSelectChangeTone={handleCopilotChangeTone}
+            {messageContent.length === 0 && attachmentsLength === 0 && shouldShowFileUpload ? (
+              <VoiceRecordButton onPress={onPressVoiceRecordIcon} />
+            ) : null}
+            {isMidnightMenuOpen && (
+              <MidnightMenu
+                status={conversation?.status}
+                onHandBack={handleHandBackToMidnight}
+                onTakeOver={handleTakeOverFromMidnight}
               />
             )}
           </Animated.View>
         ) : null}
       </Animated.View>
 
-      {!isCopilotActive && isAddMenuOptionSheetOpen ? (
+      {isAddMenuOptionSheetOpen ? (
         <CommandOptionsMenu />
-      ) : !isCopilotActive && attachmentsLength > 0 ? (
+      ) : attachmentsLength > 0 ? (
         <AttachedMedia />
       ) : null}
-
-      <ToneSelectionSheet ref={toneSelectionSheetRef} onSelectTone={handleToneSelected} />
     </AnimatedKeyboardStickyView>
   );
 };

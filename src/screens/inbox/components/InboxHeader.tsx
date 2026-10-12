@@ -7,16 +7,18 @@ import { BottomSheetBackdrop, BottomSheetWrapper } from '@/components-next';
 
 import { Icon } from '@/components-next/common/icon';
 import { DoubleCheckIcon, InboxFilterIcon } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro, whenNight } from '@/theme';
 import { InboxFilters } from './InboxFilters';
 import i18n from '@/i18n';
 import { useRefsContext } from '@/context';
+import { sheetChrome } from '@/components-next/retro';
 
 type InboxHeaderProps = {
   markAllAsRead: () => void;
 };
 
 export const InboxHeader = (props: InboxHeaderProps) => {
+  const isRetro = useIsRetro();
   const { markAllAsRead } = props;
   const { inboxFiltersSheetRef } = useRefsContext();
   const handleToggleState = () => {
@@ -30,9 +32,15 @@ export const InboxHeader = (props: InboxHeaderProps) => {
   });
 
   return (
-    <Animated.View style={[tailwind.style('border-b-[1px] border-b-blackA-A3')]}>
+    <Animated.View
+      style={[tailwind.style('border-b-[1px] border-b-blackA-A3', whenNight('border-b-gray-950'))]}>
       <Animated.View
-        style={[tailwind.style('flex flex-row justify-between items-center px-4 pt-2 pb-[12px]')]}>
+        style={[
+          tailwind.style(
+            'flex flex-row justify-between items-center px-4 pt-2 pb-[12px]',
+            whenNight('px-3 py-2'),
+          ),
+        ]}>
         <Animated.View style={tailwind.style('flex-1')}>
           <Pressable hitSlop={16} onPress={markAllAsRead}>
             <Icon icon={<DoubleCheckIcon />} size={24} />
@@ -43,7 +51,8 @@ export const InboxHeader = (props: InboxHeaderProps) => {
             style={tailwind.style(
               'text-[17px] text-center leading-[17px] tracking-[0.32px] font-inter-medium-24 text-gray-950',
             )}>
-            {i18n.t('NOTIFICATION.INBOX')}
+            {/* Night: the window's title bar already names the screen. */}
+            {isRetro ? '' : i18n.t('NOTIFICATION.INBOX')}
           </Animated.Text>
         </Animated.View>
         <Animated.View style={tailwind.style('flex-1 items-end')}>
@@ -53,11 +62,9 @@ export const InboxHeader = (props: InboxHeaderProps) => {
         </Animated.View>
       </Animated.View>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={inboxFiltersSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         animationConfigs={animationConfigs}
         enablePanDownToClose
         snapPoints={[160]}>

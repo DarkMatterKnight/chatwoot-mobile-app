@@ -6,7 +6,7 @@ import { isEqual } from 'lodash';
 
 import { Avatar } from '@/components-next/common';
 import { AnimatedNativeView, NativeView } from '@/components-next/native-components';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { Agent, Conversation, ConversationAdditionalAttributes, Label, Message } from '@/types';
 
 import { ConversationId } from './ConversationId';
@@ -72,6 +72,7 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
   } = props;
 
   const [shouldShowSLA, setShouldShowSLA] = useState(true);
+  const isRetro = useIsRetro();
 
   const hasPriority = priority !== null;
 
@@ -86,14 +87,19 @@ export const ConversationItemDetail = memo((props: ConversationDetailSubCellProp
   return (
     <AnimatedNativeView
       layout={LinearTransition.springify().damping(28).stiffness(200)}
-      style={tailwind.style('flex-1 gap-1 py-3 border-b-[1px] border-b-blackA-A3')}>
+      style={tailwind.style(
+        'flex-1 gap-1 py-3 border-b-[1px]',
+        isRetro ? 'border-b-gray-300' : 'border-b-blackA-A3',
+      )}>
       <AnimatedNativeView
         style={tailwind.style('flex flex-row justify-between items-center h-[24px]')}>
         <AnimatedNativeView style={tailwind.style('flex flex-row items-center h-[24px] gap-[5px]')}>
           <Text
             numberOfLines={1}
             style={tailwind.style(
-              'text-base font-inter-medium-24 tracking-[0.24px] text-gray-950 capitalize',
+              isRetro
+                ? 'font-vt323 text-[22px] leading-[24px] text-gray-950 capitalize'
+                : 'text-base font-inter-medium-24 tracking-[0.24px] text-gray-950 capitalize',
               // Calculated based on the widths of other content,
               // We might have to do a 10-20px offset based on the max width of the timestamp
               `max-w-[${width - 250}px]`,
