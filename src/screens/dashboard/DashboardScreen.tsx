@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { Pressable } from 'react-native';
+import { Pressable, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
 import { WebView } from 'react-native-webview';
 import snakecaseKeys from 'snakecase-keys';
@@ -8,11 +9,13 @@ import { StackActions, useNavigation, useRoute } from '@react-navigation/native'
 
 import { Icon } from '@/components-next';
 import { CloseIcon } from '@/svg-icons';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
+import { RetroDesk, RetroWindow, retroText } from '@/components-next/retro';
 import { Conversation } from '@/types';
 import { User } from '@/types/User';
 
 const DashboardScreen = () => {
+  const isRetro = useIsRetro();
   const route = useRoute();
   const navigation = useNavigation();
   const webviewRef = useRef<WebView>(null);
@@ -50,6 +53,45 @@ const DashboardScreen = () => {
     data,
   )}}));`;
 
+  const webview = (
+    <WebView
+      ref={webviewRef}
+      originWhitelist={['*']}
+      source={{ uri: url }}
+      startInLoadingState={true}
+      javaScriptEnabled={true}
+      onLoadEnd={() => {
+        webviewRef.current?.injectJavaScript(INJECTED_JAVASCRIPT);
+      }}
+      onMessage={event => {
+        if (event?.nativeEvent?.data === 'chatwoot-dashboard-app:fetch-info') {
+          webviewRef.current?.injectJavaScript(INJECTED_JAVASCRIPT);
+        }
+      }}
+    />
+  );
+
+  if (isRetro) {
+    // Night: the dashboard app runs inside a window, a close box in its title bar.
+    return (
+      <RetroDesk>
+        <SafeAreaView edges={['top', 'bottom']} style={tailwind.style('flex-1 px-1.5 pt-1')}>
+          <RetroWindow
+            fill
+            flush
+            title={title}
+            left={
+              <Pressable hitSlop={16} onPress={handleBackPress} accessibilityRole="button">
+                <Text style={retroText.bar}>{'\u2715'}</Text>
+              </Pressable>
+            }>
+            {webview}
+          </RetroWindow>
+        </SafeAreaView>
+      </RetroDesk>
+    );
+  }
+
   return (
     <Animated.View style={tailwind.style('flex-1')}>
       <Animated.View
@@ -75,21 +117,7 @@ const DashboardScreen = () => {
           </Animated.View>
         </Pressable>
       </Animated.View>
-      <WebView
-        ref={webviewRef}
-        originWhitelist={['*']}
-        source={{ uri: url }}
-        startInLoadingState={true}
-        javaScriptEnabled={true}
-        onLoadEnd={() => {
-          webviewRef.current?.injectJavaScript(INJECTED_JAVASCRIPT);
-        }}
-        onMessage={event => {
-          if (event?.nativeEvent?.data === 'chatwoot-dashboard-app:fetch-info') {
-            webviewRef.current?.injectJavaScript(INJECTED_JAVASCRIPT);
-          }
-        }}
-      />
+      {webview}
     </Animated.View>
   );
 };

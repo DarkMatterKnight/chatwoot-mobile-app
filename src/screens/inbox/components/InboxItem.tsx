@@ -1,7 +1,7 @@
 import React from 'react';
 import Animated from 'react-native-reanimated';
 import { Avatar } from '@/components-next';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import type { NotificationType } from '@/types/Notification';
 import { ConversationPriority } from '@/types/common';
 import { AnimatedNativeView, NativeView } from '@/components-next/native-components';
@@ -50,7 +50,11 @@ export const InboxItemComponent = (props: InboxItemProps) => {
   const hasAssignee = assignee?.name || assignee?.thumbnail;
 
   return (
-    <Animated.View style={tailwind.style('ml-3 py-3 pr-4 border-b-[1px] border-b-blackA-A3')}>
+    <Animated.View
+      style={tailwind.style(
+        'ml-3 py-3 pr-4 border-b-[1px] border-b-blackA-A3',
+        whenNight('border-b-gray-300'),
+      )}>
       <Animated.View style={tailwind.style('')}>
         <AnimatedNativeView
           style={tailwind.style('flex flex-row justify-between items-center h-[24px]')}>
@@ -60,6 +64,7 @@ export const InboxItemComponent = (props: InboxItemProps) => {
               numberOfLines={1}
               style={tailwind.style(
                 'text-base font-inter-medium-24 tracking-[0.24px] text-gray-950 capitalize',
+                whenNight('font-vt323 text-[22px] leading-[24px] tracking-normal'),
                 `max-w-[${width - 250}px]`,
               )}>
               {sender.name || ''}

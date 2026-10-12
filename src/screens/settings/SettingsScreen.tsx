@@ -25,7 +25,8 @@ import { clearSearchResults } from '@/store/search/searchSlice';
 import { RecentSearches } from '@/screens/search/utils/recentSearches';
 import i18n from 'i18n';
 import { HELP_URL } from '@/constants/url';
-import { tailwind } from '@/theme';
+import { RETRO, tailwind, useIsRetro, whenNight } from '@/theme';
+import { RetroDesk, RetroWindow, retroText } from '@/components-next/retro';
 
 import {
   BottomSheetBackdrop,
@@ -46,6 +47,7 @@ import { LANGUAGES, TAB_BAR_HEIGHT } from '@/constants';
 import { useRefsContext } from '@/context';
 import {
   AppearanceIcon,
+  MidnightLogo,
   ChatwootIcon,
   NotificationIcon,
   SwitchIcon,
@@ -88,6 +90,7 @@ const appVersionDetails = buildNumber ? `${appVersion} (${buildNumber})` : appVe
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
+  const isRetro = useIsRetro();
   const dispatch = useAppDispatch();
   const availabilityStatus =
     (useSelector(selectCurrentUserAvailability) as AvailabilityStatus) || 'offline';
@@ -302,52 +305,197 @@ const SettingsScreen = () => {
     },
   ];
 
+  const profile = (
+    <Animated.View style={tailwind.style('flex justify-center items-center pt-4 gap-4')}>
+      <Animated.View>
+        <UserAvatar src={avatarUrl} name={name} status={availabilityStatus} />
+        <Animated.View
+          style={tailwind.style(
+            'absolute border-[2px] border-white rounded-full -bottom-[2px] right-[10px]',
+          )}></Animated.View>
+      </Animated.View>
+      <Animated.View style={tailwind.style('flex flex-col items-center gap-1', whenNight('pb-4'))}>
+        <Animated.Text style={tailwind.style('text-[22px] font-inter-580-24 text-gray-950')}>
+          {name}
+        </Animated.Text>
+        <Animated.Text
+          style={tailwind.style('text-[15px] font-inter-420-20 leading-[17.25px] text-gray-900')}>
+          {email}
+        </Animated.Text>
+      </Animated.View>
+    </Animated.View>
+  );
+
+  const lists = (
+    <>
+      <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-6')}>
+        <SettingsList sectionTitle={i18n.t('SETTINGS.PREFERENCES')} list={preferencesList} />
+      </Animated.View>
+      <Animated.View style={tailwind.style(isRetro ? 'pt-4' : 'pt-6')}>
+        <SettingsList sectionTitle={i18n.t('SETTINGS.SUPPORT')} list={supportList} />
+      </Animated.View>
+      <Animated.View style={tailwind.style(isRetro ? 'pt-4 mx-3' : 'pt-6 mx-4')}>
+        <Button
+          variant="secondary"
+          text={i18n.t('SETTINGS.LOGOUT')}
+          isDestructive
+          handlePress={onClickLogout}
+        />
+      </Animated.View>
+    </>
+  );
+
+  const versionText = `${chatwootInstance} ${appVersionDetails}`;
+
+  if (isRetro) {
+    // Night: a stack of windows on the desk. The About window carries the mark; a long press
+    // on it opens the debug actions, as the version line does by day.
+    return (
+      <RetroDesk>
+        <SafeAreaView edges={['top']} style={tailwind.style('flex-1')}>
+          <Animated.ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={tailwind.style(`pt-2 pb-[${TAB_BAR_HEIGHT + 16}px]`)}>
+            <RetroWindow
+              flush
+              title={i18n.t('SETTINGS.HEADER_TITLE')}
+              style={tailwind.style('mx-3')}>
+              {profile}
+            </RetroWindow>
+            {lists}
+            <Pressable
+              style={tailwind.style('pt-4 mx-3')}
+              onLongPress={() => debugActionsSheetRef.current?.present()}>
+              <RetroWindow title="about.midnight">
+                <Animated.View style={tailwind.style('flex-row items-center gap-3')}>
+                  <Animated.View style={tailwind.style('w-11 h-11')}>
+                    <MidnightLogo body={RETRO.ink} eyes={RETRO.body} />
+                  </Animated.View>
+                  <Animated.View style={tailwind.style('flex-1')}>
+                    <Text style={retroText.line}>Midnight</Text>
+                    <Text style={retroText.meta}>{versionText}</Text>
+                  </Animated.View>
+                </Animated.View>
+              </RetroWindow>
+            </Pressable>
+          </Animated.ScrollView>
+        </SafeAreaView>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={userAvailabilityStatusSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          // TODO: Fix this later
+          // bottomInset={bottom === 0 ? 12 : bottom}
+          snapPoints={[190]}>
+          <BottomSheetWrapper>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.SET_AVAILABILITY')} />
+            <AvailabilityStatusList
+              changeAvailabilityStatus={changeAvailabilityStatus}
+              availabilityStatus={availabilityStatus}
+            />
+          </BottomSheetWrapper>
+        </BottomSheetModal>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={languagesModalSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          // TODO: Fix this later
+          // bottomInset={bottom === 0 ? 12 : bottom}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          snapPoints={['70%']}>
+          <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.SET_LANGUAGE')} />
+            <LanguageList onChangeLanguage={onChangeLanguage} currentLanguage={activeLocale} />
+          </BottomSheetScrollView>
+        </BottomSheetModal>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={appearanceSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          snapPoints={[230]}>
+          <BottomSheetWrapper>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.APPEARANCE')} />
+            <AppearanceList currentTheme={currentTheme} onChangeTheme={onChangeTheme} />
+          </BottomSheetWrapper>
+        </BottomSheetModal>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={notificationPreferencesSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          // TODO: Fix this later
+          // bottomInset={bottom === 0 ? 12 : bottom}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          snapPoints={['52%']}>
+          <BottomSheetWrapper>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.NOTIFICATION_PREFERENCES')} />
+            <NotificationPreferences />
+          </BottomSheetWrapper>
+        </BottomSheetModal>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={switchAccountSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          // TODO: Fix this later
+          // bottomInset={bottom === 0 ? 12 : bottom}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          snapPoints={['50%']}>
+          <BottomSheetWrapper>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.SWITCH_ACCOUNT')} />
+            <SwitchAccount
+              currentAccountId={activeAccountId}
+              changeAccount={changeAccount}
+              accounts={accounts}
+            />
+          </BottomSheetWrapper>
+        </BottomSheetModal>
+        <BottomSheetModal
+          {...sheetChrome()}
+          ref={debugActionsSheetRef}
+          backdropComponent={BottomSheetBackdrop}
+          enablePanDownToClose
+          animationConfigs={animationConfigs}
+          snapPoints={['36%']}>
+          <BottomSheetWrapper>
+            <BottomSheetHeader headerText={i18n.t('SETTINGS.DEBUG_ACTIONS')} />
+            <DebugActions />
+          </BottomSheetWrapper>
+        </BottomSheetModal>
+        {!!process.env.EXPO_PUBLIC_CHATWOOT_WEBSITE_TOKEN &&
+          !!process.env.EXPO_PUBLIC_CHATWOOT_BASE_URL &&
+          !!showWidget && (
+            <ChatWootWidget
+              websiteToken={process.env.EXPO_PUBLIC_CHATWOOT_WEBSITE_TOKEN}
+              locale="en"
+              baseUrl={process.env.EXPO_PUBLIC_CHATWOOT_BASE_URL}
+              closeModal={() => toggleWidget(false)}
+              isModalVisible={showWidget}
+              user={userDetails}
+              customAttributes={customAttributes}
+            />
+          )}
+      </RetroDesk>
+    );
+  }
+
   return (
     <SafeAreaView style={tailwind.style('flex-1 bg-white font-inter-normal-20')}>
       <SettingsHeader />
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={tailwind.style(`pb-[${TAB_BAR_HEIGHT - 1}px]`)}>
-        <Animated.View style={tailwind.style('flex justify-center items-center pt-4 gap-4')}>
-          <Animated.View>
-            <UserAvatar src={avatarUrl} name={name} status={availabilityStatus} />
-            <Animated.View
-              style={tailwind.style(
-                'absolute border-[2px] border-white rounded-full -bottom-[2px] right-[10px]',
-              )}></Animated.View>
-          </Animated.View>
-          <Animated.View style={tailwind.style('flex flex-col items-center gap-1')}>
-            <Animated.Text style={tailwind.style('text-[22px] font-inter-580-24 text-gray-950')}>
-              {name}
-            </Animated.Text>
-            <Animated.Text
-              style={tailwind.style(
-                'text-[15px] font-inter-420-20 leading-[17.25px] text-gray-900',
-              )}>
-              {email}
-            </Animated.Text>
-          </Animated.View>
-        </Animated.View>
-        <Animated.View style={tailwind.style('pt-6')}>
-          <SettingsList sectionTitle={i18n.t('SETTINGS.PREFERENCES')} list={preferencesList} />
-        </Animated.View>
-        <Animated.View style={tailwind.style('pt-6')}>
-          <SettingsList sectionTitle={i18n.t('SETTINGS.SUPPORT')} list={supportList} />
-        </Animated.View>
-        <Animated.View style={tailwind.style('pt-6 mx-4')}>
-          <Button
-            variant="secondary"
-            text={i18n.t('SETTINGS.LOGOUT')}
-            isDestructive
-            handlePress={onClickLogout}
-          />
-        </Animated.View>
+        {profile}
+        {lists}
         <Pressable
           style={tailwind.style('p-4 items-center')}
           onLongPress={() => debugActionsSheetRef.current?.present()}>
-          <Text style={tailwind.style('text-sm text-gray-700 ')}>
-            {`${chatwootInstance} ${appVersionDetails}`}
-          </Text>
+          <Text style={tailwind.style('text-sm text-gray-700 ')}>{versionText}</Text>
         </Pressable>
       </Animated.ScrollView>
       <BottomSheetModal
