@@ -1,7 +1,7 @@
 import React from 'react';
 import { Animated, Text, Dimensions } from 'react-native';
 
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, MessageType } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 
@@ -91,6 +91,7 @@ export const MessageTextCell = (props: MessageTextCellProps) => {
           isEmailMessage ? `max-w-[${EMAIL_MESSAGE_WIDTH}px]` : `max-w-[${TEXT_MAX_WIDTH}px]`,
           isIncoming ? 'bg-blue-700' : '',
           isOutgoing ? 'bg-gray-100' : '',
+          isOutgoing ? whenNight('border border-gray-950') : '',
           isMessageFailed ? 'bg-ruby-700' : '',
           isAvatarRendered
             ? isOutgoing
@@ -125,6 +126,7 @@ export const MessageTextCell = (props: MessageTextCellProps) => {
         <Text
           style={tailwind.style(
             'text-xs font-inter-420-20 tracking-[0.32px] pr-1',
+            whenNight('font-jbmono-400 text-[10px] tracking-normal'),
             isIncoming ? 'text-whiteA-A11' : '',
             isOutgoing ? 'text-gray-700' : '',
             isMessageFailed ? 'text-whiteA-A11' : '',

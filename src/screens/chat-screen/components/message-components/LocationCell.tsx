@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, UnixTimestamp } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Avatar, Icon } from '@/components-next/common';
@@ -73,6 +73,7 @@ export const LocationCell: React.FC<LocationCellProps> = props => {
                 `max-w-[${TEXT_MAX_WIDTH}px]`,
                 isIncoming ? 'bg-blue-700' : '',
                 isOutgoing ? 'bg-gray-100' : '',
+                isOutgoing ? whenNight('border border-gray-950') : '',
                 isMessageFailed ? 'bg-ruby-400' : '',
                 shouldRenderAvatar
                   ? isOutgoing
@@ -106,6 +107,7 @@ export const LocationCell: React.FC<LocationCellProps> = props => {
               <Text
                 style={tailwind.style(
                   'text-xs font-inter-420-20 tracking-[0.32px] pr-1',
+                  whenNight('font-jbmono-400 text-[10px] tracking-normal'),
                   isIncoming ? 'text-whiteA-A11' : '',
                   isOutgoing ? 'text-gray-700' : '',
                   isMessageFailed ? 'text-ruby-900' : '',

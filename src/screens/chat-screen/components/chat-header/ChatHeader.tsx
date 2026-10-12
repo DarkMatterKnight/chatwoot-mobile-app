@@ -1,12 +1,13 @@
 import React from 'react';
-import { ImageSourcePropType, Keyboard, Platform, Pressable } from 'react-native';
+import { ImageSourcePropType, Keyboard, Platform, Pressable, StyleSheet, Text } from 'react-native';
 import { BottomSheetModal, useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
 import Animated from 'react-native-reanimated';
 
 import { Avatar, Icon } from '@/components-next';
 import { ChevronLeft, OpenIcon, Overflow, ResolvedIcon, SLAIcon } from '@/svg-icons';
 import { BottomSheetBackdrop, BottomSheetWrapper } from '@/components-next';
-import { tailwind } from '@/theme';
+import { RETRO, tailwind, useIsRetro } from '@/theme';
+import i18n from '@/i18n';
 import { ChatDropdownMenu, DashboardList } from './DropdownMenu';
 import { SLAEvent } from '@/types/common';
 import { useRefsContext } from '@/context';
@@ -54,6 +55,65 @@ export const ChatHeader = ({
       slaEventsSheetRef.current?.present();
     }
   };
+
+  const isRetro = useIsRetro();
+
+  const slaSheet = (
+    <BottomSheetModal
+      {...sheetChrome()}
+      ref={slaEventsSheetRef}
+      backdropComponent={BottomSheetBackdrop}
+      enablePanDownToClose
+      animationConfigs={animationConfigs}
+      snapPoints={['36%']}>
+      <BottomSheetWrapper>
+        <SlaEvents slaEvents={slaEvents} statusText={statusText ?? ''} />
+      </BottomSheetWrapper>
+    </BottomSheetModal>
+  );
+
+  if (isRetro) {
+    // Night: the header is the window's title bar. Back box, the contact's name, then the
+    // conversation's state as an inverted label that toggles it.
+    return (
+      <Animated.View style={retroStyles.bar}>
+        <Pressable
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Back"
+          onPress={onBackPress}
+          style={retroStyles.box}>
+          <Text style={retroStyles.barText}>{'\u25C2'}</Text>
+        </Pressable>
+        <Pressable
+          onPress={onContactDetailsPress}
+          accessibilityRole="button"
+          style={retroStyles.name}>
+          <Text numberOfLines={1} style={retroStyles.barText}>
+            {name}
+          </Text>
+        </Pressable>
+        {hasSla && (
+          <Pressable hitSlop={8} onPress={toggleSlaEventsSheet}>
+            <Text style={[retroStyles.barText, isSlaMissed && retroStyles.missed]}>SLA</Text>
+          </Pressable>
+        )}
+        <Pressable hitSlop={8} accessibilityRole="button" onPress={onToggleChatStatus}>
+          <Text style={retroStyles.state}>
+            {isResolved
+              ? `\u2713 ${i18n.t('CONVERSATION.FILTERS.STATUS.OPTIONS.RESOLVED')}`
+              : i18n.t('CONVERSATION.FILTERS.STATUS.OPTIONS.OPEN')}
+          </Text>
+        </Pressable>
+        {dashboardsList.length > 0 && (
+          <ChatDropdownMenu dropdownMenuList={dashboardsList}>
+            <Text style={retroStyles.barText}>{'\u22EF'}</Text>
+          </ChatDropdownMenu>
+        )}
+        {slaSheet}
+      </Animated.View>
+    );
+  }
 
   return (
     <Animated.View style={[tailwind.style('border-b-[1px] border-b-blackA-A3')]}>
@@ -111,17 +171,30 @@ export const ChatHeader = ({
           )}
         </Animated.View>
       </Animated.View>
-      <BottomSheetModal
-        {...sheetChrome()}
-        ref={slaEventsSheetRef}
-        backdropComponent={BottomSheetBackdrop}
-        enablePanDownToClose
-        animationConfigs={animationConfigs}
-        snapPoints={['36%']}>
-        <BottomSheetWrapper>
-          <SlaEvents slaEvents={slaEvents} statusText={statusText ?? ''} />
-        </BottomSheetWrapper>
-      </BottomSheetModal>
+      {slaSheet}
     </Animated.View>
   );
 };
+
+const retroStyles = StyleSheet.create({
+  bar: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 36 },
+  box: {
+    width: 26,
+    height: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: RETRO.body,
+  },
+  name: { flex: 1 },
+  barText: { fontFamily: 'VT323', fontSize: 22, lineHeight: 24, color: RETRO.body },
+  missed: { color: '#F2A5A8' },
+  state: {
+    paddingHorizontal: 5,
+    backgroundColor: RETRO.body,
+    color: RETRO.ink,
+    fontFamily: 'VT323',
+    fontSize: 20,
+    lineHeight: 22,
+  },
+});

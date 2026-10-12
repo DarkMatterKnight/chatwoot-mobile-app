@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { FlashList } from '@shopify/flash-list';
 import { useAppKeyboardAnimation } from '@/utils';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { Message } from '@/types';
 import { MessageComponent } from '../message-item/Message';
 // import { MessageItemContainer } from '../message-item/MessageItemContainer';
@@ -24,6 +24,20 @@ const AnimatedFlashlist = Animated.createAnimatedComponent(FlashList<Message | {
 type DateSectionProps = { item: { date: string } };
 
 const DateSection = ({ item }: DateSectionProps) => {
+  const isRetro = useIsRetro();
+  if (isRetro) {
+    // Night: the date as a ruled divider in the terminal face.
+    return (
+      <Animated.View style={tailwind.style('flex flex-row items-center gap-2 px-3 py-4')}>
+        <Animated.View style={tailwind.style('flex-1 h-[1px] bg-gray-500')} />
+        <Animated.Text
+          style={tailwind.style('font-vt323 text-[20px] leading-[22px] text-gray-800')}>
+          {item.date}
+        </Animated.Text>
+        <Animated.View style={tailwind.style('flex-1 h-[1px] bg-gray-500')} />
+      </Animated.View>
+    );
+  }
   return (
     <Animated.View style={tailwind.style('flex flex-row justify-center items-center py-4')}>
       <Animated.View style={tailwind.style('rounded-lg py-1 px-[7px] bg-blackA-A3')}>

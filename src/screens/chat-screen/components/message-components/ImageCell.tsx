@@ -2,7 +2,7 @@ import React from 'react';
 import { Text } from 'react-native';
 import Animated, { Easing, FadeIn } from 'react-native-reanimated';
 import { ImageBackground } from 'expo-image';
-import { tailwind } from '@/theme';
+import { tailwind, whenNight } from '@/theme';
 import { Channel, Message, MessageStatus, UnixTimestamp } from '@/types';
 import { unixTimestampToReadableTime } from '@/utils';
 import { Avatar } from '@/components-next/common';
@@ -65,7 +65,9 @@ export const ImageCell = (props: ImageCellProps) => {
                 'relative pl-3 pr-2.5 py-2 rounded-2xl overflow-hidden',
                 isIncoming ? 'bg-blue-700' : '',
                 isOutgoing ? 'bg-gray-100' : '',
+                isOutgoing ? whenNight('border border-gray-950') : '',
                 isPrivate ? ' bg-amber-100' : '',
+                isPrivate ? whenNight('border border-dashed border-amber-700') : '',
                 shouldRenderAvatar
                   ? isOutgoing
                     ? 'rounded-br-none'
@@ -104,6 +106,7 @@ export const ImageCell = (props: ImageCellProps) => {
                     <Text
                       style={tailwind.style(
                         'text-xs font-inter-420-20 tracking-[0.32px] leading-[14px] text-whiteA-A12 pr-1',
+                        whenNight('font-jbmono-400 text-[10px] tracking-normal'),
                       )}>
                       {unixTimestampToReadableTime(timeStamp)}
                     </Text>

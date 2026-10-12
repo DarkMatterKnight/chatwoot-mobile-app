@@ -54,3 +54,9 @@ export const tailwind = {
   },
   color: (color: string) => instances[activeMode].color(color),
 };
+
+/**
+ * Classes that apply by night only, for adding Night's touches to an existing style without
+ * touching Day's: `tailwind.style('rounded-2xl bg-gray-100', whenNight('border border-gray-950'))`.
+ */
+export const whenNight = (classes: string) => (activeMode === 'night' ? classes : '');
