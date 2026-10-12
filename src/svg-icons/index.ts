@@ -1,4 +1,5 @@
 export * from './attachments';
+export * from './brand';
 export * from './channels';
 export * from './check';
 export * from './common';
