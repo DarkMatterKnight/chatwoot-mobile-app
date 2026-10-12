@@ -1,21 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, View, TextInput, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Animated, View, TextInput, Text, Pressable } from 'react-native';
 import { useSharedValue } from 'react-native-reanimated';
 import { useNavigation } from '@react-navigation/native';
 import { Button, VerificationCode } from '@/components-next';
 import { useAnimatedShake } from '@/components-next/verification-code/hooks/use-animated-shake';
 import type { StatusType } from '@/components-next/verification-code';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import { resetSettings } from '@/store/settings/settingsSlice';
 import { authActions } from '@/store/auth/authActions';
 import { resetAuth, clearAuthError } from '@/store/auth/authSlice';
 import i18n from '@/i18n';
+import { AuthScreenFrame } from './components';
 
 const MFAScreen = () => {
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
+  const isRetro = useIsRetro();
   const { mfaToken, uiFlags, error } = useAppSelector(state => state.auth);
 
   const [activeTab, setActiveTab] = useState<'authenticator' | 'backup'>('authenticator');
@@ -98,156 +99,143 @@ const MFAScreen = () => {
   };
 
   return (
-    <SafeAreaView style={tailwind.style('flex-1 bg-white')}>
-      <View style={tailwind.style('flex-1 bg-white')}>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={tailwind.style('px-6 pt-8')}
-          keyboardShouldPersistTaps="handled">
-          <View style={tailwind.style('pt-6 gap-4')}>
-            <Animated.Text
-              style={tailwind.style('text-2xl text-gray-950 font-inter-semibold-20 text-center')}>
-              {i18n.t('MFA.TITLE')}
-            </Animated.Text>
-          </View>
+    <AuthScreenFrame
+      contentClasses="px-6 pt-8"
+      centerTitle
+      title={i18n.t('MFA.TITLE')}
+      windowTitle="2fa.key">
+      {/* Tab Selector */}
+      <View style={tailwind.style('flex-row mt-8 mb-6 bg-gray-100 rounded-lg p-1')}>
+        <Pressable
+          style={tailwind.style(
+            `flex-1 py-3 px-4 rounded-md ${activeTab === 'authenticator' ? 'bg-white' : ''}`,
+          )}
+          onPress={() => {
+            setActiveTab('authenticator');
+            setIsCodeWrong(false);
+            dispatch(clearAuthError());
+            verificationStatus.value = 'inProgress';
+          }}>
+          <Text
+            style={tailwind.style(
+              `text-center font-inter-normal-20 ${
+                activeTab === 'authenticator' ? 'text-gray-950' : 'text-gray-600'
+              }`,
+            )}>
+            {i18n.t('MFA.TABS.AUTHENTICATOR_APP')}
+          </Text>
+        </Pressable>
+        <Pressable
+          style={tailwind.style(
+            `flex-1 py-3 px-4 rounded-md ${activeTab === 'backup' ? 'bg-white' : ''}`,
+          )}
+          onPress={() => {
+            setActiveTab('backup');
+            setIsCodeWrong(false);
+            dispatch(clearAuthError());
+            verificationStatus.value = 'inProgress';
+          }}>
+          <Text
+            style={tailwind.style(
+              `text-center font-inter-normal-20 ${
+                activeTab === 'backup' ? 'text-gray-950' : 'text-gray-600'
+              }`,
+            )}>
+            {i18n.t('MFA.TABS.BACKUP_CODE')}
+          </Text>
+        </Pressable>
+      </View>
 
-          {/* Tab Selector */}
-          <View style={tailwind.style('flex-row mt-8 mb-6 bg-gray-100 rounded-lg p-1')}>
-            <Pressable
-              style={tailwind.style(
-                `flex-1 py-3 px-4 rounded-md ${activeTab === 'authenticator' ? 'bg-white' : ''}`,
-              )}
-              onPress={() => {
-                setActiveTab('authenticator');
-                setIsCodeWrong(false);
-                dispatch(clearAuthError());
-                verificationStatus.value = 'inProgress';
-              }}>
-              <Text
-                style={tailwind.style(
-                  `text-center font-inter-normal-20 ${
-                    activeTab === 'authenticator' ? 'text-gray-950' : 'text-gray-600'
-                  }`,
-                )}>
-                {i18n.t('MFA.TABS.AUTHENTICATOR_APP')}
-              </Text>
-            </Pressable>
-            <Pressable
-              style={tailwind.style(
-                `flex-1 py-3 px-4 rounded-md ${activeTab === 'backup' ? 'bg-white' : ''}`,
-              )}
-              onPress={() => {
-                setActiveTab('backup');
-                setIsCodeWrong(false);
-                dispatch(clearAuthError());
-                verificationStatus.value = 'inProgress';
-              }}>
-              <Text
-                style={tailwind.style(
-                  `text-center font-inter-normal-20 ${
-                    activeTab === 'backup' ? 'text-gray-950' : 'text-gray-600'
-                  }`,
-                )}>
-                {i18n.t('MFA.TABS.BACKUP_CODE')}
-              </Text>
-            </Pressable>
-          </View>
+      {/* Code Input */}
+      <View style={tailwind.style('mt-4')}>
+        <Text style={[tailwind.style('text-gray-700 font-inter-normal-20 mb-4 pl-2')]}>
+          {activeTab === 'authenticator'
+            ? i18n.t('MFA.INSTRUCTIONS.AUTHENTICATOR')
+            : i18n.t('MFA.INSTRUCTIONS.BACKUP')}
+        </Text>
 
-          {/* Code Input */}
-          <View style={tailwind.style('mt-4')}>
-            <Text style={[tailwind.style('text-gray-700 font-inter-normal-20 mb-4 pl-2')]}>
-              {activeTab === 'authenticator'
-                ? i18n.t('MFA.INSTRUCTIONS.AUTHENTICATOR')
-                : i18n.t('MFA.INSTRUCTIONS.BACKUP')}
-            </Text>
-
-            {activeTab === 'authenticator' ? (
-              <>
-                <Pressable onPress={() => hiddenInputRef.current?.focus()}>
-                  <Animated.View style={[rShakeStyle, tailwind.style('mb-2')]}>
-                    <VerificationCode
-                      code={code}
-                      maxLength={6}
-                      status={verificationStatus}
-                      isCodeWrong={isCodeWrong}
-                    />
-                  </Animated.View>
-                </Pressable>
-
-                {/* Error message for authenticator */}
-                {error && (
-                  <Animated.Text
-                    style={tailwind.style('font-inter-normal-20 text-ruby-900 mb-6 pl-2')}>
-                    {error}
-                  </Animated.Text>
-                )}
-
-                {!error && <View style={tailwind.style('mb-8')} />}
-
-                {/* Hidden TextInput for OTP */}
-                <TextInput
-                  ref={hiddenInputRef}
-                  style={tailwind.style('opacity-0 w-1 h-1')}
-                  value={code.join('')}
-                  onChangeText={handleCodeChange}
+        {activeTab === 'authenticator' ? (
+          <>
+            <Pressable onPress={() => hiddenInputRef.current?.focus()}>
+              <Animated.View style={[rShakeStyle, tailwind.style('mb-2')]}>
+                <VerificationCode
+                  code={code}
                   maxLength={6}
-                  keyboardType="numeric"
-                  autoCapitalize="none"
-                  autoFocus
-                  textContentType="oneTimeCode"
+                  status={verificationStatus}
+                  isCodeWrong={isCodeWrong}
                 />
-              </>
-            ) : (
-              <>
-                <Animated.View style={[rShakeStyle, tailwind.style('mb-2 pl-2 pr-2')]}>
-                  <TextInput
-                    ref={backupInputRef}
-                    style={tailwind.style(
-                      'w-full p-4 border-2 rounded-lg text-left border-gray-300',
-                    )}
-                    value={backupCode}
-                    onChangeText={text => {
-                      setBackupCode(text);
-                      setIsCodeWrong(false);
-                      if (error) dispatch(clearAuthError());
-                    }}
-                    placeholder={i18n.t('MFA.PLACEHOLDERS.BACKUP_CODE')}
-                    keyboardType="default"
-                    autoFocus
-                    autoCorrect={false}
-                    maxLength={8}
-                  />
-                </Animated.View>
+              </Animated.View>
+            </Pressable>
 
-                {/* Error message for backup code */}
-                {error && (
-                  <Animated.Text
-                    style={tailwind.style('font-inter-normal-20 text-ruby-900 mb-6 pl-2')}>
-                    {error}
-                  </Animated.Text>
-                )}
-
-                {!error && <View style={tailwind.style('mb-8')} />}
-              </>
+            {/* Error message for authenticator */}
+            {error && (
+              <Animated.Text style={tailwind.style('font-inter-normal-20 text-ruby-900 mb-6 pl-2')}>
+                {error}
+              </Animated.Text>
             )}
 
-            <Button
-              text={
-                uiFlags.isVerifyingMfa
-                  ? i18n.t('MFA.BUTTONS.VERIFYING')
-                  : i18n.t('MFA.BUTTONS.VERIFY')
-              }
-              handlePress={() => handleVerify()}
-              disabled={
-                (activeTab === 'authenticator' && code.length !== 6) ||
-                (activeTab === 'backup' && backupCode.length !== 8) ||
-                uiFlags.isVerifyingMfa
-              }
+            {!error && <View style={tailwind.style('mb-8')} />}
+
+            {/* Hidden TextInput for OTP */}
+            <TextInput
+              ref={hiddenInputRef}
+              style={tailwind.style('opacity-0 w-1 h-1')}
+              value={code.join('')}
+              onChangeText={handleCodeChange}
+              maxLength={6}
+              keyboardType="numeric"
+              autoCapitalize="none"
+              autoFocus
+              textContentType="oneTimeCode"
             />
-          </View>
-        </ScrollView>
+          </>
+        ) : (
+          <>
+            <Animated.View style={[rShakeStyle, tailwind.style('mb-2 pl-2 pr-2')]}>
+              <TextInput
+                ref={backupInputRef}
+                style={tailwind.style(
+                  'w-full p-4 rounded-lg text-left',
+                  isRetro ? 'border border-gray-950 bg-white' : 'border-2 border-gray-300',
+                )}
+                value={backupCode}
+                onChangeText={text => {
+                  setBackupCode(text);
+                  setIsCodeWrong(false);
+                  if (error) dispatch(clearAuthError());
+                }}
+                placeholder={i18n.t('MFA.PLACEHOLDERS.BACKUP_CODE')}
+                keyboardType="default"
+                autoFocus
+                autoCorrect={false}
+                maxLength={8}
+              />
+            </Animated.View>
+
+            {/* Error message for backup code */}
+            {error && (
+              <Animated.Text style={tailwind.style('font-inter-normal-20 text-ruby-900 mb-6 pl-2')}>
+                {error}
+              </Animated.Text>
+            )}
+
+            {!error && <View style={tailwind.style('mb-8')} />}
+          </>
+        )}
+
+        <Button
+          text={
+            uiFlags.isVerifyingMfa ? i18n.t('MFA.BUTTONS.VERIFYING') : i18n.t('MFA.BUTTONS.VERIFY')
+          }
+          handlePress={() => handleVerify()}
+          disabled={
+            (activeTab === 'authenticator' && code.length !== 6) ||
+            (activeTab === 'backup' && backupCode.length !== 8) ||
+            uiFlags.isVerifyingMfa
+          }
+        />
       </View>
-    </SafeAreaView>
+    </AuthScreenFrame>
   );
 };
 
