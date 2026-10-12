@@ -11,6 +11,7 @@ import { tailwind } from '@/theme';
 import { InboxFilters } from './InboxFilters';
 import i18n from '@/i18n';
 import { useRefsContext } from '@/context';
+import { sheetChrome } from '@/components-next/retro';
 
 type InboxHeaderProps = {
   markAllAsRead: () => void;
@@ -53,11 +54,9 @@ export const InboxHeader = (props: InboxHeaderProps) => {
         </Animated.View>
       </Animated.View>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={inboxFiltersSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         animationConfigs={animationConfigs}
         enablePanDownToClose
         snapPoints={[160]}>

@@ -6,4 +6,4 @@ export * from './RetroButton';
 export * from './RetroField';
 export * from './RetroMarks';
 export * from './RetroMotion';
-export * from './useSheetChrome';
+export * from './sheetChrome';

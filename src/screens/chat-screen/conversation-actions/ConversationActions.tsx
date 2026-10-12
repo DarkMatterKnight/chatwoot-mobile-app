@@ -28,6 +28,7 @@ import { selectAllTeams } from '@/store/team/teamSelectors';
 import { selectInstallationUrl } from '@/store/settings/settingsSelectors';
 import { ConversationMetaInformation } from './components/ConversationMetaInformation';
 import { selectConversationParticipantsByConversationId } from '@/store/conversation-participant/conversationParticipantSelectors';
+import { sheetChrome } from '@/components-next/retro';
 
 const SCREEN_WIDTH = Dimensions.get('screen').width;
 
@@ -157,11 +158,9 @@ export const ConversationActions = () => {
         </Animated.View>
       </ScrollView>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={updateParticipantSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         animationConfigs={animationConfigs}
         enablePanDownToClose
         enableDynamicSizing={false}

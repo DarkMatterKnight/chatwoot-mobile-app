@@ -78,6 +78,7 @@ import { PROFILE_EVENTS } from '@/constants/analyticsEvents';
 import { getUserPermissions } from '@/utils/permissionUtils';
 import { CONVERSATION_PERMISSIONS } from '@/constants/permissions';
 import { useAppDispatch, useAppSelector } from '@/hooks';
+import { sheetChrome } from '@/components-next/retro';
 
 const appName = Application.applicationName;
 const appVersion = Application.nativeApplicationVersion;
@@ -350,15 +351,13 @@ const SettingsScreen = () => {
         </Pressable>
       </Animated.ScrollView>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={userAvailabilityStatusSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         enablePanDownToClose
         animationConfigs={animationConfigs}
         // TODO: Fix this later
         // bottomInset={bottom === 0 ? 12 : bottom}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={[190]}>
         <BottomSheetWrapper>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.SET_AVAILABILITY')} />
@@ -369,15 +368,13 @@ const SettingsScreen = () => {
         </BottomSheetWrapper>
       </BottomSheetModal>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={languagesModalSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         // TODO: Fix this later
         // bottomInset={bottom === 0 ? 12 : bottom}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={['70%']}>
         <BottomSheetScrollView showsVerticalScrollIndicator={false}>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.SET_LANGUAGE')} />
@@ -385,13 +382,11 @@ const SettingsScreen = () => {
         </BottomSheetScrollView>
       </BottomSheetModal>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={appearanceSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={[230]}>
         <BottomSheetWrapper>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.APPEARANCE')} />
@@ -399,15 +394,13 @@ const SettingsScreen = () => {
         </BottomSheetWrapper>
       </BottomSheetModal>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={notificationPreferencesSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         // TODO: Fix this later
         // bottomInset={bottom === 0 ? 12 : bottom}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={['52%']}>
         <BottomSheetWrapper>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.NOTIFICATION_PREFERENCES')} />
@@ -415,15 +408,13 @@ const SettingsScreen = () => {
         </BottomSheetWrapper>
       </BottomSheetModal>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={switchAccountSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         // TODO: Fix this later
         // bottomInset={bottom === 0 ? 12 : bottom}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={['50%']}>
         <BottomSheetWrapper>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.SWITCH_ACCOUNT')} />
@@ -435,13 +426,11 @@ const SettingsScreen = () => {
         </BottomSheetWrapper>
       </BottomSheetModal>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={debugActionsSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={['36%']}>
         <BottomSheetWrapper>
           <BottomSheetHeader headerText={i18n.t('SETTINGS.DEBUG_ACTIONS')} />

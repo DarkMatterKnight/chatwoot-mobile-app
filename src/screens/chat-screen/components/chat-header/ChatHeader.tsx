@@ -11,6 +11,7 @@ import { ChatDropdownMenu, DashboardList } from './DropdownMenu';
 import { SLAEvent } from '@/types/common';
 import { useRefsContext } from '@/context';
 import { SlaEvents } from './SlaEvents';
+import { sheetChrome } from '@/components-next/retro';
 
 type ChatHeaderProps = {
   name: string;
@@ -111,13 +112,11 @@ export const ChatHeader = ({
         </Animated.View>
       </Animated.View>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={slaEventsSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
         enablePanDownToClose
         animationConfigs={animationConfigs}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         snapPoints={['36%']}>
         <BottomSheetWrapper>
           <SlaEvents slaEvents={slaEvents} statusText={statusText ?? ''} />

@@ -18,6 +18,7 @@ import { filterLabels } from '@/store/label/labelSelectors';
 import { LabelItem } from '../LabelItem';
 import { LabelStack } from './LabelStack';
 import { LabelBackdrop } from './LabelBackdrop';
+import { sheetChrome } from '@/components-next/retro';
 
 interface LabelActionsProps {
   labels: string[];
@@ -116,11 +117,9 @@ export const LabelActions = (props: LabelActionsProps) => {
         </Pressable>
       </Animated.View>
       <BottomSheetModal
+        {...sheetChrome()}
         ref={addLabelSheetRef}
         backdropComponent={backdropComponent}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-[26px] overflow-hidden')}
         enablePanDownToClose
         snapPoints={[316]}
         keyboardBehavior="interactive"

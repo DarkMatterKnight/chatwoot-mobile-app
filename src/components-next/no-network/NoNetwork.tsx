@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 import { SafeAreaView, StatusBar, Animated, Easing } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import i18n from 'i18n';
-import { tailwind } from '@/theme';
+import { tailwind, useIsRetro } from '@/theme';
 
 export const NoNetworkBar = () => {
   const animationConstants = useMemo(
@@ -15,6 +15,7 @@ export const NoNetworkBar = () => {
     [],
   );
 
+  const isRetro = useIsRetro();
   const [connected, setConnected] = useState(true);
   const animation = useRef(new Animated.Value(0)).current;
 
@@ -54,8 +55,12 @@ export const NoNetworkBar = () => {
     <SafeAreaView style={tailwind.style('bg-red-900')}>
       <StatusBar backgroundColor={tailwind.color('red-900')} />
       <Animated.View style={[tailwind.style(' px-4 py-2'), animationStyle]}>
-        <Animated.Text style={[tailwind.style('text-white text-center text-sm'), animationStyle]}>
-          {i18n.t('ERRORS.OfFLINE')}
+        <Animated.Text
+          style={[
+            tailwind.style('text-white text-center', isRetro ? 'font-vt323 text-xl' : 'text-sm'),
+            animationStyle,
+          ]}>
+          {isRetro ? `✕ ${i18n.t('ERRORS.OfFLINE')}` : i18n.t('ERRORS.OfFLINE')}
         </Animated.Text>
       </Animated.View>
     </SafeAreaView>

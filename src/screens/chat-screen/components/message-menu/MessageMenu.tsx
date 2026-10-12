@@ -12,6 +12,7 @@ import * as ContextMenu from 'zeego/context-menu';
 
 import { tailwind } from '@/theme';
 import { BottomSheetHeader, BottomSheetWrapper, Icon } from '@/components-next/common';
+import { sheetChrome } from '@/components-next/retro';
 
 export type MenuOption = {
   title: string;
@@ -112,13 +113,9 @@ export const MessageMenu = (props: PropsWithChildren<MessageMenuProps>) => {
       <React.Fragment>
         <GestureDetector gesture={longPressGesture}>{children}</GestureDetector>
         <BottomSheetModal
+          {...sheetChrome('mx-3 rounded-[26px] overflow-hidden')}
           ref={contextMenuSheetRef}
           backdropComponent={renderBackDrop}
-          handleIndicatorStyle={tailwind.style(
-            'overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]',
-          )}
-          handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-          style={tailwind.style('mx-3 rounded-[26px] overflow-hidden')}
           detached
           bottomInset={bottom === 0 ? 12 : bottom}
           animationConfigs={animationConfigs}

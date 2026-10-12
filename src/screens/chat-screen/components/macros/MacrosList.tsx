@@ -14,6 +14,7 @@ import { selectAllMacros } from '@/store/macro/macroSelectors';
 import MacroStack from './MacroStack';
 import MacroDetails from './MacroDetails';
 import { MacroProvider } from './MacroContext';
+import { sheetChrome } from '@/components-next/retro';
 
 export const MacrosList = ({ conversationId }: { conversationId: number }) => {
   const macros = useAppSelector(selectAllMacros);
@@ -37,11 +38,9 @@ export const MacrosList = ({ conversationId }: { conversationId: number }) => {
   return (
     <Animated.View>
       <BottomSheetModal
+        {...sheetChrome('rounded-t-[26px] overflow-hidden')}
         ref={macrosListSheetRef}
         backdropComponent={BottomSheetBackdrop}
-        handleIndicatorStyle={tailwind.style('overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]')}
-        handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-        style={tailwind.style('rounded-t-[26px] overflow-hidden')}
         enablePanDownToClose
         snapPoints={['75%']}
         enableDynamicSizing={false}>

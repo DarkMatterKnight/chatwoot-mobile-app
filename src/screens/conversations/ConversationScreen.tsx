@@ -63,6 +63,7 @@ import i18n from '@/i18n';
 import ActionBottomSheet from '@/navigation/tabs/ActionBottomSheet';
 import { getCurrentRouteName } from '@/utils/navigationUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { sheetChrome } from '@/components-next/retro';
 
 // The screen list thats need to be checked for refreshing the conversations list
 const REFRESH_SCREEN_LIST = [SCREENS.CONVERSATION, SCREENS.INBOX, SCREENS.SETTINGS];
@@ -315,13 +316,9 @@ const ConversationScreen = () => {
         <ConversationHeader />
         <ConversationList />
         <BottomSheetModal
+          {...sheetChrome()}
           ref={filtersModalSheetRef}
           backdropComponent={BottomSheetBackdrop}
-          handleIndicatorStyle={tailwind.style(
-            'overflow-hidden bg-blackA-A6 w-8 h-1 rounded-[11px]',
-          )}
-          handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-          style={tailwind.style('rounded-[26px] overflow-hidden')}
           animationConfigs={animationConfigs}
           enablePanDownToClose
           snapPoints={filterSnapPoints}

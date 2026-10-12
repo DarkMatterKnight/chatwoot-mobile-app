@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { BottomSheetModal, useBottomSheetSpringConfigs } from '@gorhom/bottom-sheet';
-import tailwind from 'twrnc';
 import { BottomSheetBackdrop } from '@/components-next';
 import { useAppDispatch, useAppSelector } from '@/hooks';
 import {
@@ -16,6 +15,7 @@ import {
   UpdateTeam,
   UpdatePriority,
 } from '@/screens/conversations/components/conversation-actions';
+import { sheetChrome } from '@/components-next/retro';
 
 const ActionBottomSheet = () => {
   const dispatch = useAppDispatch();
@@ -52,11 +52,9 @@ const ActionBottomSheet = () => {
 
   return (
     <BottomSheetModal
+      {...sheetChrome()}
       ref={actionsModalSheetRef}
       backdropComponent={BottomSheetBackdrop}
-      handleIndicatorStyle={tailwind.style('overflow-hidden w-8 h-1 rounded-[11px]')}
-      handleStyle={tailwind.style('p-0 h-4 pt-[5px]')}
-      style={tailwind.style('rounded-[26px] overflow-hidden')}
       animationConfigs={animationConfigs}
       enablePanDownToClose
       enableDynamicSizing={false}
